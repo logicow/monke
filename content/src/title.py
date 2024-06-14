@@ -2,6 +2,8 @@ import pygame
 import os
 import monkeglobals as g
 import sys
+import options
+import slides
 
 pressStartTimer = 0
 colorOn = (255, 0, 0)
@@ -9,30 +11,30 @@ colorOff = (255, 255, 255)
 mainMenuSelection = 0
 
 def goToTitle():
-    g.title = {}
     if 'title' not in g.img:
         imgTitle = pygame.image.load(os.path.join('img', 'title.png'))
         g.img['title'] = pygame.transform.scale(imgTitle, (1920, 1080))
     
-    fontBase = pygame.font.SysFont('Comic Sans MS', 90)
-    
     global titlePressStart
-    titlePressStart = fontBase.render('Press Start', False, (255, 255, 255))
+    titlePressStart = g.fontBase.render('Press Start', False, (255, 255, 255))
     
     global titlePlayOn
     global titlePlayOff
-    titlePlayOn = fontBase.render('Play', False, colorOn)
-    titlePlayOff = fontBase.render('Play', False, colorOff)
+    titlePlayOn = g.fontBase.render('Play', False, colorOn)
+    titlePlayOff = g.fontBase.render('Play', False, colorOff)
     
     global titleOptionsOn
     global titleOptionsOff
-    titleOptionsOn = fontBase.render('Options', False, colorOn)
-    titleOptionsOff = fontBase.render('Options', False, colorOff)
+    titleOptionsOn = g.fontBase.render('Options', False, colorOn)
+    titleOptionsOff = g.fontBase.render('Options', False, colorOff)
     
     global titleQuitOn
     global titleQuitOff
-    titleQuitOn = fontBase.render('Quit', False, colorOn)
-    titleQuitOff = fontBase.render('Quit', False, colorOff)
+    titleQuitOn = g.fontBase.render('Quit', False, colorOn)
+    titleQuitOff = g.fontBase.render('Quit', False, colorOff)
+    
+    global labelAccept
+    labelAccept = g.fontSmall.render('Z: select', False, colorOff)
     
     g.tickFunction = title
 
@@ -40,6 +42,7 @@ def title():
     # check keys
     if(g.keys['anykey'] > 0):
         g.tickFunction = titleMenu
+        g.keys['menuSelect'] = g.dt + 1
         titleMenu()
         return
         
@@ -85,8 +88,14 @@ def titleMenu():
     if g.keys['escape']:
         if sys.platform != "emscripten":
             g.tickFunction = None
+            return
     
-    if g.keys['menuSelect']:
+    if g.keys['menuSelect'] <= g.dt and g.keys['menuSelect'] > 0:
+        if mainMenuSelection == 0:
+            slides.goToSlidesStage1()
+        if mainMenuSelection == 1:
+            options.goToOptions()
+            return
         if mainMenuSelection == 2:
             g.tickFunction = None
     
@@ -96,4 +105,6 @@ def titleMenu():
     g.screen.blit(titleOptionsOn if mainMenuSelection == 1 else titleOptionsOff, (800,800))
     if numMenuOptions >= 3:
         g.screen.blit(titleQuitOn if mainMenuSelection == 2 else titleQuitOff, (800,900))
+        
+    g.screen.blit(labelAccept, (1640, 1000))
     pass

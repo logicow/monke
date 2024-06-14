@@ -16,8 +16,13 @@ def initWeb():
 def initMonke():
     g.img = {}
     g.pygame.font.init()
+    g.fontSmall = g.pygame.font.Font('font/press-start.regular.ttf', 24)
+    g.fontBase = g.pygame.font.Font('font/Quicksand_Book.otf', 90)
     g.keys = {}
     g.dt = 0
+    g.volSound = 100
+    g.volMusic = 100
+    g.invulnerability = 0
     title.goToTitle()
     pass
 
@@ -33,6 +38,11 @@ def tickKeys():
         g.keys['jump'] += g.dt
     else:
         g.keys['jump'] = 0
+        
+    if pressed[g.pygame.K_x]:
+        g.keys['attack'] += g.dt
+    else:
+        g.keys['attack'] = 0
         
     if pressed[g.pygame.K_RETURN] or pressed[g.pygame.K_SPACE]:
         g.keys['start'] += g.dt
@@ -55,6 +65,17 @@ def tickKeys():
         g.keys['down'] = 0
     pass
     
+    if pressed[g.pygame.K_LEFT]:
+        g.keys['left'] += g.dt
+    else:
+        g.keys['left'] = 0
+    
+    if pressed[g.pygame.K_RIGHT]:
+        g.keys['right'] += g.dt
+    else:
+        g.keys['right'] = 0
+    pass
+    
     if pressed[g.pygame.K_ESCAPE]:
         g.keys['escape'] += g.dt
     else:
@@ -65,6 +86,11 @@ def tickKeys():
         g.keys['menuSelect'] += g.dt
     else:
         g.keys['menuSelect'] = 0
+    
+    if g.keys['attack'] > 0:
+        g.keys['menuBack'] += g.dt
+    else:
+        g.keys['menuBack'] = 0
 
 async def main():
     g.pygame.init()

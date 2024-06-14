@@ -5,3 +5,9 @@ def init():
     global dt
     global keys
     global tickFunction
+    global fontBase
+    global fontSmall
+    global volMusic
+    global volSound
+    global invulnerability
+    
