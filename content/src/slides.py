@@ -8,6 +8,9 @@ colorOn = (255, 0, 0)
 colorOff = (255, 255, 255)
 slideCurrent = None
 slideImgDict = {}
+slideAlpha = 0
+slideFadingIn = True
+slideFadingOut = False
 slides = [\
     '1-1', '1-2', '1-3', '1-4', \
     '2-1', '2-2', '2-3',\
@@ -21,6 +24,8 @@ def goToSlidesStage1():
     pass
     
 def initSlides():
+    if 'darkener' not in g.img:
+        g.img['darkener'] = g.pygame.Surface((1920, 1080))
     global labelNext
     labelNext = g.fontSmall.render('Z: next', False, colorOff)
     
@@ -29,6 +34,9 @@ def initSlides():
     
     g.tickFunction = tickSlides
     g.keys['anykey'] = g.dt + 1
+    slideFadingIn = True
+    slideFadingOut = False
+    slideAlpha = 0.0
     tickSlides()
     pass
 
@@ -53,25 +61,14 @@ def goToSlidesEnding():
 def tickSlides():
     global slideCurrent
     global slideImgDict
+    global slideFadingIn
+    global slideFadingOut
+    global slideAlpha
     
     # check keys 
     if g.keys['anykey'] > 0 and g.keys['anykey'] <= g.dt:
-        if slideCurrent == '1-4':
-            stage.goToStage1()
-            return
-        elif slideCurrent == '2-3':
-            stage.goToStage2()
-            return
-        elif slideCurrent == '3-6':
-            stage.goToStage3()
-            return
-        elif slideCurrent == '4-5':
-            title.goToTitle()
-            return
-        else:
-            curSlideIdx = slides.index(slideCurrent)
-            curSlideIdx += 1
-            slideCurrent = slides[curSlideIdx]
+        slideFadingIn = False
+        slideFadingOut = True
     
     anyKeyToClose = False
     if \
@@ -81,6 +78,37 @@ def tickSlides():
     slideCurrent == '4-5':
         anyKeyToClose = True;
     
+    #update fade
+    fadeSpeed = 4.0 / 1000.0
+    if slideFadingIn:
+        slideAlpha += g.dt * fadeSpeed
+        if slideAlpha >= 1.0:
+            slideAlpha = 1.0
+            slideFadingIn = False
+    
+    if slideFadingOut:
+        slideAlpha -= g.dt * fadeSpeed
+        if slideAlpha <= 0:
+            slideAlpha = 0
+            slideFadingOut = False
+            slideFadingIn = True
+            if slideCurrent == '1-4':
+                stage.goToStage1()
+                return
+            elif slideCurrent == '2-3':
+                stage.goToStage2()
+                return
+            elif slideCurrent == '3-6':
+                stage.goToStage3()
+                return
+            elif slideCurrent == '4-5':
+                title.goToTitle()
+                return
+            else:
+                curSlideIdx = slides.index(slideCurrent)
+                curSlideIdx += 1
+                slideCurrent = slides[curSlideIdx]
+    
     # draw
     if slideCurrent not in slideImgDict:
         fileName = slideCurrent + '.png'
@@ -88,6 +116,11 @@ def tickSlides():
         slideImgDict[slideCurrent] = g.pygame.transform.scale(img, (1920, 1080))   
     g.screen.blit(slideImgDict[slideCurrent], (0, 0))
     
-    
     g.screen.blit(labelClose if anyKeyToClose else labelNext, (1400, 1000))
+    
+    if slideAlpha != 1:
+        darkenerAlpha = 255 * (1 - slideAlpha)
+        g.img['darkener'].set_alpha(darkenerAlpha)
+        g.screen.blit(g.img['darkener'], (0, 0))
+    
     pass
