@@ -9,11 +9,11 @@ def getScreenY(y, z):
 class Player:
     def __init__(self, pos):
         img = g.pygame.image.load(os.path.join('img', 'player', 'idle1.png'))
-        self.image = g.pygame.transform.scale(img, (img.width * 4, img.height * 4)).convert_alpha(g.screen)
+        self.image = g.pygame.transform.scale(img, (img.get_width()*4, img.get_height()*4)).convert_alpha(g.screen)
         self.radius = 128
-        self.x = pos[0] + self.image.width  / 2
+        self.x = pos[0] + self.image.get_width()  / 2
         self.y = self.radius
-        self.z = pos[1] * 2 + self.image.height
+        self.z = pos[1] * 2 + self.image.get_height()
         g.player = self
        
     
@@ -28,14 +28,14 @@ class Player:
             self.z += 2 * g.dt
         g.scrollX = self.x - 960
         g.scrollY = getScreenY(self.y, self.z) - 540
-        pass
+        return
     
     def draw(self):
         g.sortedSprites.append((self.image, self.x, self.y, self.z))
-        pass
+        return
         
     def drawShadow(self):
-        pass
+        return
 
 def spawnPlayer(obj):
     newObj = Player((obj.x, obj.y))
@@ -44,22 +44,21 @@ def spawnPlayer(obj):
 class Saucer:
     def __init__(self, pos):
         img = g.pygame.image.load(os.path.join('img', 'saucer', 'idle1.png'))
-        self.image = g.pygame.transform.scale(img, (img.width * 4, img.height * 4)).convert_alpha(g.screen)
-        
+        self.image = g.pygame.transform.scale(img, (img.get_width() * 4, img.get_height() * 4)).convert_alpha(g.screen)
         self.radius = 128
-        self.x = pos[0] + self.image.width  / 2
+        self.x = pos[0] + self.image.get_width()  / 2
         self.y = self.radius
-        self.z = pos[1] * 2 + self.image.height
+        self.z = pos[1] * 2 + self.image.get_height()
     
     def tick(self):
-        pass
+        return
     
     def draw(self):
         g.sortedSprites.append((self.image, self.x, self.y, self.z))
-        pass
+        return
         
     def drawShadow(self):
-        pass
+        return
 
 def spawnSaucer(obj):
     newObj = Saucer((obj.x, obj.y))
@@ -69,12 +68,11 @@ def spawnSaucer(obj):
 class Goblin:
     def __init__(self, pos):
         img = g.pygame.image.load(os.path.join('img', 'goblin', 'idle1.png'))
-        self.image = g.pygame.transform.scale(img, (img.width * 4, img.height * 4)).convert_alpha(g.screen)
-    
+        self.image = g.pygame.transform.scale(img, (img.get_width() * 4, img.get_height() * 4)).convert_alpha(g.screen)
         self.radius = 128
-        self.x = pos[0] + self.image.width  / 2
+        self.x = pos[0] + self.image.get_width()  / 2
         self.y = self.radius
-        self.z = pos[1] * 2 + self.image.height
+        self.z = pos[1] * 2 + self.image.get_height()
         
     def tick(self):
         playerDist = math.sqrt(\
@@ -83,15 +81,14 @@ class Goblin:
         (g.player.z - self.z) * (g.player.z - self.z)) - self.radius - g.player.radius
         if playerDist <= 0:
             g.stageClear = True
-        
-        pass
+        return
     
     def draw(self):
         g.sortedSprites.append((self.image, self.x, self.y, self.z))
-        pass
+        return
         
     def drawShadow(self):
-        pass
+        return
 
 def spawnGoblin(obj):
     newObj = Goblin((obj.x, obj.y))

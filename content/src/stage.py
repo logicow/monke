@@ -117,6 +117,8 @@ def initStage():
     stageFadingOut = False
     stageAlpha = 0
     g.stageClear = False
+    g.scrollX = 0
+    g.scrollY = 0
     
     g.stageObjects = []
     
@@ -124,7 +126,7 @@ def initStage():
     spawnType['player'] = gameObjects.spawnPlayer
     spawnType['saucer'] = gameObjects.spawnSaucer
     spawnType['goblin'] = gameObjects.spawnGoblin
-    
+
     for layer in tilemap.visible_layers:
         if isinstance(layer, pytmx.TiledObjectGroup):
             for obj in layer:
@@ -199,13 +201,11 @@ def tickStage():
             elif escapeMenuCursorPos == 2:
                 escapeMenu = False
                 title.goToTitle()
-                
-    #if g.keys['jump'] > 0 and g.keys['jump'] <= g.dt:
-    #    stageFadingIn = False
-    #    stageFadingOut = True
+    
     
     if not escapeMenu:
         for o in g.stageObjects:
+            pass
             o.tick()
 
 #draw
@@ -224,16 +224,18 @@ def tickStage():
     g.sortedSprites = []
     
     for o in g.stageObjects:
+        pass
         o.drawShadow()
     for o in g.stageObjects:
+        pass
         o.draw()
     
     g.sortedSprites.sort(key = lambda x: x[3])
     
     for s in g.shadowSprites:
-        g.screen.blit(s[0], (s[1] - g.scrollX - s[0].width/2, getScreenY(s[2], s[3]) - g.scrollY - s[0].height / 2))
+        g.screen.blit(s[0], (s[1] - g.scrollX - s[0].get_width()/2, getScreenY(s[2], s[3]) - g.scrollY - s[0].get_height() / 2))
     for s in g.sortedSprites:
-        g.screen.blit(s[0], (s[1] - g.scrollX - s[0].width/2, getScreenY(s[2], s[3]) - g.scrollY - s[0].height / 2))
+        g.screen.blit(s[0], (s[1] - g.scrollX - s[0].get_width()/2, getScreenY(s[2], s[3]) - g.scrollY - s[0].get_height() / 2))
     
     drawTilemapForeground()
     
@@ -250,5 +252,9 @@ def tickStage():
         g.screen.blit(labelReturnOn if escapeMenuCursorPos == 0 else labelReturnOff, (760, 450))
         g.screen.blit(labelOptionsOn if escapeMenuCursorPos == 1 else labelOptionsOff, (760, 500))
         g.screen.blit(labelBackToMainOn if escapeMenuCursorPos == 2 else labelBackToMainOff, (760, 550))
+    
+    if g.debugString:
+        debugLabel = g.fontSmall.render(g.debugString, False, (255, 255, 255))
+        g.screen.blit(debugLabel, (4, 4))
     
     pass

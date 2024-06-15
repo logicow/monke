@@ -17,3 +17,4 @@ def init():
     global shadowSprites
     global stageClear
     global player
+    global debugString

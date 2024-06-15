@@ -37,6 +37,7 @@ def goToTitle():
     labelAccept = g.fontSmall.render('Z: select', False, colorOff)
     
     g.tickFunction = title
+    g.debugString = None
 
 def title():
     # check keys
