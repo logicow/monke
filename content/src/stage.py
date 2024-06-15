@@ -19,6 +19,8 @@ stageAlpha = 0
 stageFadingIn = True
 stageFadingOut = False
 tilemap = None
+stageNameImage = None
+stageNameFadeTimer = 0
 
 def getScreenY(y, z):
     return z/2 - y
@@ -44,6 +46,8 @@ def goToStage1():
     backgroundName = '1'
     stage = 1
     loadTilemap(os.path.join('tilemap', 'stage1.tmx'))
+    global stageNameImage
+    stageNameImage = g.fontBase.render('Stage 1: In the City', False, colorOff).convert_alpha()
     initStage()
     pass
 
@@ -53,6 +57,8 @@ def goToStage2():
     backgroundName = '2'
     stage = 2
     loadTilemap(os.path.join('tilemap', 'stage2.tmx'))
+    global stageNameImage
+    stageNameImage = g.fontBase.render('Stage 2: Jurassic Period', False, colorOff).convert_alpha()
     initStage()
     pass
     
@@ -62,9 +68,34 @@ def goToStage3():
     stage = 3
     backgroundName = '3'
     loadTilemap(os.path.join('tilemap', 'stage3.tmx'))
+    global stageNameImage
+    stageNameImage = g.fontBase.render('Stage 3: The Crusades', False, colorOff).convert_alpha()
     initStage()
     pass
     
+def goToStage4():
+    global stage
+    global backgroundName
+    stage = 4
+    backgroundName = '4'
+    loadTilemap(os.path.join('tilemap', 'stage4.tmx'))
+    global stageNameImage
+    stageNameImage = g.fontBase.render('Stage 4: The War', False, colorOff).convert_alpha()
+    initStage()
+    pass
+    
+def goToStage5():
+    global stage
+    global backgroundName
+    stage = 5
+    backgroundName = '5'
+    loadTilemap(os.path.join('tilemap', 'stage5.tmx'))
+    global stageNameImage
+    stageNameImage = g.fontBase.render('Stage 5: Post Apocalyptic World', False, colorOff).convert_alpha()
+    initStage()
+    pass
+
+
 def drawTilemapBackground():
     global tilemap
     for layer in tilemap.visible_layers:
@@ -126,7 +157,9 @@ def initStage():
     spawnType['player'] = gameObjects.spawnPlayer
     spawnType['saucer'] = gameObjects.spawnSaucer
     spawnType['goblin'] = gameObjects.spawnGoblin
-
+    spawnType['enemyblue'] = gameObjects.spawnEnemyBlue
+    spawnType['dinorider'] = gameObjects.spawnDinorider
+    spawnType['plantman'] = gameObjects.spawnPlantman
     for layer in tilemap.visible_layers:
         if isinstance(layer, pytmx.TiledObjectGroup):
             for obj in layer:
@@ -136,6 +169,9 @@ def initStage():
                     spawnType[obj.name](obj)
                 else:
                     print(obj.name + ' not in spawner list')
+                    
+    global stageNameFadeTimer
+    stageNameFadeTimer = 0
     pass
 
 def tickStage():
@@ -152,7 +188,7 @@ def tickStage():
         stageFadingOut = True
     
     doTransition = False
-    fadeSpeed = 1.0 / 1000.0
+    fadeSpeed = 3.0 / 1000.0
     if stageFadingIn:
         stageAlpha += g.dt * fadeSpeed
         if stageAlpha >= 1.0:
@@ -175,10 +211,19 @@ def tickStage():
     if doTransition:
         if stage == 1:
             slides.goToSlidesStage2()
+            return
         elif stage == 2:
-            slides.goToSlidesStage3()
+            goToStage3()
+            return
         elif stage == 3:
+            goToStage4()
+            return
+        elif stage == 4:
+            slides.goToSlidesStage5()
+            return
+        elif stage == 5:
             slides.goToSlidesEnding()
+            return
     
     if escapeMenu:
         if g.keys['up'] <= g.dt and g.keys['up'] > 0:
@@ -201,6 +246,7 @@ def tickStage():
             elif escapeMenuCursorPos == 2:
                 escapeMenu = False
                 title.goToTitle()
+                return
     
     
     if not escapeMenu:
@@ -240,6 +286,27 @@ def tickStage():
     drawTilemapForeground()
     
 #draw game UI
+    global stageNameFadeTimer
+    stageNameFadeTimer += g.dt
+    nameTime1 = 800.0
+    nameTime2 = nameTime1 + 1600.0
+    nameTime3 = nameTime2 + nameTime1
+    if stageNameFadeTimer < nameTime1:
+        stageNameImage.set_alpha(stageNameFadeTimer * 255.0 / nameTime1)
+        print('1')
+    elif stageNameFadeTimer < nameTime2:
+        stageNameImage.set_alpha(255)
+        print('2')
+    elif stageNameFadeTimer < nameTime3:
+        print("3")
+        stageNameImage.set_alpha((nameTime3 - stageNameFadeTimer) * 255.0 / nameTime1)
+    else:
+        print("4")
+        stageNameImage.set_alpha(0)
+    print(str(stageNameFadeTimer))
+    if stageNameImage.get_alpha() and stageNameImage.get_alpha() > 0:
+        posX = 960 - stageNameImage.get_width()/2
+        g.screen.blit(stageNameImage, (posX, 300))
     
     if stageAlpha != 1:
         darkenerAlpha = 255 * (1 - stageAlpha)

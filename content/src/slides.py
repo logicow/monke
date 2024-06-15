@@ -23,7 +23,7 @@ def goToSlidesStage1():
     #g.pygame.mixer.music.load(os.path.join('music', 'cs127_-_the_destination.ogg'))
     #g.pygame.mixer.music.play(-1)
     g.musicTitle.fadeout(500)
-    g.musicGame.play()
+    g.musicGame.play(-1, 0, 0)
     initSlides()
     pass
     
@@ -50,7 +50,7 @@ def goToSlidesStage2():
     initSlides()
     pass
 
-def goToSlidesStage3():
+def goToSlidesStage5():
     global slideCurrent
     slideCurrent = '3-1'
     initSlides()
@@ -83,7 +83,7 @@ def tickSlides():
         anyKeyToClose = True;
     
     #update fade
-    fadeSpeed = 4.0 / 1000.0
+    fadeSpeed = 5.0 / 1000.0
     if slideFadingIn:
         slideAlpha += g.dt * fadeSpeed
         if slideAlpha >= 1.0:
@@ -103,7 +103,7 @@ def tickSlides():
                 stage.goToStage2()
                 return
             elif slideCurrent == '3-6':
-                stage.goToStage3()
+                stage.goToStage5()
                 return
             elif slideCurrent == '4-5':
                 title.goToTitle()

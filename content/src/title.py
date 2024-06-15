@@ -9,6 +9,7 @@ pressStartTimer = 0
 colorOn = (255, 0, 0)
 colorOff = (255, 255, 255)
 mainMenuSelection = 0
+titleMusicTimer = 0
 
 def goToTitle():
     if 'title' not in g.img:
@@ -39,20 +40,25 @@ def goToTitle():
     g.tickFunction = title
     g.debugString = None
     
-    #g.pygame.mixer.music.load(os.path.join('sfx', 'biker_mice_from_mars_-_circuit.ogg'))
-    #g.pygame.mixer.music.play(-1)
+    global titleMusicTimer
     if(g.musicGame):
         g.musicGame.fadeout(1000)
     else:
         g.musicGame = g.pygame.mixer.Sound(os.path.join('sfx', 'cs127_-_the_destination.ogg'))
     if not g.musicTitle:
         g.musicTitle = g.pygame.mixer.Sound(os.path.join('sfx', 'biker_mice_from_mars_-_circuit.ogg'))
-   
-    g.musicTitle.play(-1, 0, 0)
+    titleMusicTimer = 0
 
 def title():
+    global titleMusicTimer
+    titleMusicTimerOld = titleMusicTimer
+    titleMusicTimer += g.dt
+    if(titleMusicTimer >= 200 and titleMusicTimerOld < 200):
+        print("playing music")
+        g.musicTitle.play(-1, 0, 0)
+
     # check keys
-    if(g.keys['anykey'] > 0):
+    if g.keys['anykey'] > 0 and g.keys['anykey'] <= g.dt:
         g.tickFunction = titleMenu
         g.keys['menuSelect'] = g.dt + 1
         titleMenu()
@@ -81,6 +87,7 @@ def titleMenu():
     global titleOptionsOff
     global titleQuitOn
     global titleQuitOff
+    global titleMusicTimer
     
     numMenuOptions = 3
     if sys.platform == "emscripten":

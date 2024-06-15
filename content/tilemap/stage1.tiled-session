@@ -46,11 +46,29 @@
             "dynamicWrapping": false,
             "scaleInDock": 1
         },
+        "stage3.tmx": {
+            "expandedObjectLayers": [
+                3
+            ],
+            "scale": 1.5,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 343,
+                "y": -34.333333333333314
+            }
+        },
+        "stage3.tmx#objectsSet": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1
+        },
         "stage3.tmx#stage2": {
             "dynamicWrapping": false
+        },
+        "stage3.tmx#stage3": {
+            "scaleInDock": 1
         }
     },
-    "last.imagePath": "C:/gitMonke/monke/content/img/goblin",
+    "last.imagePath": "C:/gitMonke/monke/content/img/plantman",
     "map.height": 24,
     "map.lastUsedFormat": "tmx",
     "map.tileHeight": 64,

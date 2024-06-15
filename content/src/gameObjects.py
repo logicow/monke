@@ -93,3 +93,78 @@ class Goblin:
 def spawnGoblin(obj):
     newObj = Goblin((obj.x, obj.y))
     g.stageObjects.append(newObj)
+    
+    
+
+class Dinorider:
+    def __init__(self, pos):
+        img = g.pygame.image.load(os.path.join('img', 'dinorider', 'idle1.png'))
+        self.image = g.pygame.transform.scale(img, (img.get_width() * 4, img.get_height() * 4)).convert_alpha(g.screen)
+        self.radius = 128
+        self.x = pos[0] + self.image.get_width()  / 2
+        self.y = self.radius
+        self.z = pos[1] * 2 + self.image.get_height()
+    
+    def tick(self):
+        return
+    
+    def draw(self):
+        g.sortedSprites.append((self.image, self.x, self.y, self.z))
+        return
+        
+    def drawShadow(self):
+        return
+
+def spawnDinorider(obj):
+    newObj = Dinorider((obj.x, obj.y))
+    g.stageObjects.append(newObj)
+    
+    
+
+class Plantman:
+    def __init__(self, pos):
+        img = g.pygame.image.load(os.path.join('img', 'plantman', 'idle1.png'))
+        self.image = g.pygame.transform.scale(img, (img.get_width() * 4, img.get_height() * 4)).convert_alpha(g.screen)
+        self.radius = 128
+        self.x = pos[0] + self.image.get_width()  / 2
+        self.y = self.radius
+        self.z = pos[1] * 2 + self.image.get_height()
+    
+    def tick(self):
+        return
+    
+    def draw(self):
+        g.sortedSprites.append((self.image, self.x, self.y, self.z))
+        return
+        
+    def drawShadow(self):
+        return
+
+def spawnPlantman(obj):
+    newObj = Plantman((obj.x, obj.y))
+    g.stageObjects.append(newObj)
+    
+    
+    
+class EnemyBlue:
+    def __init__(self, pos):
+        img = g.pygame.image.load(os.path.join('img', 'enemyblue', 'idle1.png'))
+        self.image = g.pygame.transform.scale(img, (img.get_width() * 4, img.get_height() * 4)).convert_alpha(g.screen)
+        self.radius = 128
+        self.x = pos[0] + self.image.get_width()  / 2
+        self.y = self.radius
+        self.z = pos[1] * 2 + self.image.get_height()
+    
+    def tick(self):
+        return
+    
+    def draw(self):
+        g.sortedSprites.append((self.image, self.x, self.y, self.z))
+        return
+        
+    def drawShadow(self):
+        return
+
+def spawnEnemyBlue(obj):
+    newObj = EnemyBlue((obj.x, obj.y))
+    g.stageObjects.append(newObj)
