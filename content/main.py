@@ -25,6 +25,7 @@ def initMonke():
     g.invulnerability = 0
     g.musicTitle = None
     g.musicGame = None
+    g.musicGame2 = None
     g.pygame.mixer.init()
     title.goToTitle()
     pass

@@ -6,7 +6,7 @@ import options
 import slides
 
 pressStartTimer = 0
-colorOn = (255, 0, 0)
+colorOn = (0, 0, 196)
 colorOff = (255, 255, 255)
 mainMenuSelection = 0
 titleMusicTimer = 0
@@ -45,6 +45,10 @@ def goToTitle():
         g.musicGame.fadeout(1000)
     else:
         g.musicGame = g.pygame.mixer.Sound(os.path.join('sfx', 'cs127_-_the_destination.ogg'))
+    if(g.musicGame2):
+        g.musicGame2.fadeout(1000)
+    else:
+        g.musicGame2 = g.pygame.mixer.Sound(os.path.join('sfx', 'DOPE.ogg'))
     if not g.musicTitle:
         g.musicTitle = g.pygame.mixer.Sound(os.path.join('sfx', 'biker_mice_from_mars_-_circuit.ogg'))
     titleMusicTimer = 0
@@ -75,7 +79,7 @@ def title():
     pressStartTimer += g.dt
     pressStartVisible = (pressStartTimer / 300.0) % 2
     if pressStartVisible >= 1:
-        g.screen.blit(titlePressStart, (700,820))
+        g.screen.blit(titlePressStart, (700,860))
     
     pass
     
@@ -120,10 +124,10 @@ def titleMenu():
     
     # draw
     g.screen.blit(g.img['title'], (0, 0))
-    g.screen.blit(titlePlayOn if mainMenuSelection == 0 else titlePlayOff, (800,700))
-    g.screen.blit(titleOptionsOn if mainMenuSelection == 1 else titleOptionsOff, (800,800))
+    g.screen.blit(titlePlayOn if mainMenuSelection == 0 else titlePlayOff, (1300,400))
+    g.screen.blit(titleOptionsOn if mainMenuSelection == 1 else titleOptionsOff, (1300,500))
     if numMenuOptions >= 3:
-        g.screen.blit(titleQuitOn if mainMenuSelection == 2 else titleQuitOff, (800,900))
+        g.screen.blit(titleQuitOn if mainMenuSelection == 2 else titleQuitOff, (1300,600))
         
     g.screen.blit(labelAccept, (1640, 1000))
     pass

@@ -20,3 +20,4 @@ def init():
     global debugString
     global musicTitle
     global musicGame
+    global musicGame2

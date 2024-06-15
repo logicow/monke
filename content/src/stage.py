@@ -81,6 +81,8 @@ def goToStage4():
     loadTilemap(os.path.join('tilemap', 'stage4.tmx'))
     global stageNameImage
     stageNameImage = g.fontBase.render('Stage 4: The War', False, colorOff).convert_alpha()
+    g.musicGame.fadeout(1000)
+    g.musicGame2.play()
     initStage()
     pass
     
