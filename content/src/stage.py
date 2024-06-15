@@ -287,23 +287,20 @@ def tickStage():
     
 #draw game UI
     global stageNameFadeTimer
-    stageNameFadeTimer += g.dt
+    if not escapeMenu:
+        stageNameFadeTimer += g.dt
     nameTime1 = 800.0
     nameTime2 = nameTime1 + 1600.0
     nameTime3 = nameTime2 + nameTime1
     if stageNameFadeTimer < nameTime1:
         stageNameImage.set_alpha(stageNameFadeTimer * 255.0 / nameTime1)
-        print('1')
     elif stageNameFadeTimer < nameTime2:
         stageNameImage.set_alpha(255)
-        print('2')
     elif stageNameFadeTimer < nameTime3:
-        print("3")
         stageNameImage.set_alpha((nameTime3 - stageNameFadeTimer) * 255.0 / nameTime1)
     else:
-        print("4")
         stageNameImage.set_alpha(0)
-    print(str(stageNameFadeTimer))
+    
     if stageNameImage.get_alpha() and stageNameImage.get_alpha() > 0:
         posX = 960 - stageNameImage.get_width()/2
         g.screen.blit(stageNameImage, (posX, 300))
