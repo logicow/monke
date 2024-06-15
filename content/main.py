@@ -23,6 +23,9 @@ def initMonke():
     g.volSound = 100
     g.volMusic = 100
     g.invulnerability = 0
+    g.musicTitle = None
+    g.musicGame = None
+    g.pygame.mixer.init()
     title.goToTitle()
     pass
 

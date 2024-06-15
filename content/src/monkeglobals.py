@@ -18,3 +18,5 @@ def init():
     global stageClear
     global player
     global debugString
+    global musicTitle
+    global musicGame

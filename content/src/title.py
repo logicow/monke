@@ -38,6 +38,17 @@ def goToTitle():
     
     g.tickFunction = title
     g.debugString = None
+    
+    #g.pygame.mixer.music.load(os.path.join('sfx', 'biker_mice_from_mars_-_circuit.ogg'))
+    #g.pygame.mixer.music.play(-1)
+    if(g.musicGame):
+        g.musicGame.fadeout(1000)
+    else:
+        g.musicGame = g.pygame.mixer.Sound(os.path.join('sfx', 'cs127_-_the_destination.ogg'))
+    if not g.musicTitle:
+        g.musicTitle = g.pygame.mixer.Sound(os.path.join('sfx', 'biker_mice_from_mars_-_circuit.ogg'))
+   
+    g.musicTitle.play(-1, 0, 0)
 
 def title():
     # check keys

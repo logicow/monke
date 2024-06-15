@@ -20,6 +20,10 @@ slides = [\
 def goToSlidesStage1():
     global slideCurrent
     slideCurrent = '1-1'
+    #g.pygame.mixer.music.load(os.path.join('music', 'cs127_-_the_destination.ogg'))
+    #g.pygame.mixer.music.play(-1)
+    g.musicTitle.fadeout(500)
+    g.musicGame.play()
     initSlides()
     pass
     
@@ -116,7 +120,7 @@ def tickSlides():
         slideImgDict[slideCurrent] = g.pygame.transform.scale(img, (1920, 1080)).convert(g.screen)
     g.screen.blit(slideImgDict[slideCurrent], (0, 0))
     
-    g.screen.blit(labelClose if anyKeyToClose else labelNext, (1400, 1000))
+    g.screen.blit(labelClose if anyKeyToClose else labelNext, (1640, 1000))
     
     if slideAlpha != 1:
         darkenerAlpha = 255 * (1 - slideAlpha)
