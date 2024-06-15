@@ -4,6 +4,9 @@ import sys
 import slides
 import options
 import title
+import pytmx
+from util_pygame import load_pygame
+import gameObjects
 
 colorOn = (255, 0, 0)
 colorOff = (255, 255, 255)
@@ -15,12 +18,32 @@ escapeMenuCursorPos = 0
 stageAlpha = 0
 stageFadingIn = True
 stageFadingOut = False
+tilemap = None
+
+def getScreenY(y, z):
+    return z/2 - y
+
+def loadTilemap(filename):
+    global tilemap
+    tilemap = load_pygame(filename)
+    
+    #scale images 4x
+    tilemap.tilewidth *= 4
+    tilemap.tileheight *= 4
+        
+    for idx, image in enumerate(tilemap.images):
+        if image != None:
+            scaledImage = g.pygame.transform.scale(image, (image.get_width() * 4, image.get_height() * 4))
+            tilemap.images[idx] = scaledImage
+
+    pass
 
 def goToStage1():
     global backgroundName
     global stage
     backgroundName = '1'
     stage = 1
+    loadTilemap(os.path.join('tilemap', 'stage1.tmx'))
     initStage()
     pass
 
@@ -29,6 +52,7 @@ def goToStage2():
     global backgroundName
     backgroundName = '2'
     stage = 2
+    loadTilemap(os.path.join('tilemap', 'stage2.tmx'))
     initStage()
     pass
     
@@ -37,10 +61,38 @@ def goToStage3():
     global backgroundName
     stage = 3
     backgroundName = '3'
+    loadTilemap(os.path.join('tilemap', 'stage3.tmx'))
     initStage()
+    pass
+    
+def drawTilemapBackground():
+    global tilemap
+    for layer in tilemap.visible_layers:
+        if isinstance(layer, pytmx.TiledTileLayer):
+            drawTileLayer(layer)
+        elif isinstance(layer, pytmx.TiledObjectGroup):
+            #drawObjectLayer(layer)
+            pass
+        elif isinstance(layer, pytmx.TiledImageLayer):
+            drawImageLayer(layer)
+    pass
+
+def drawTileLayer(layer):
+    global tilemap
+    tw = tilemap.tilewidth
+    th = tilemap.tileheight
+    for x, y, image in layer.tiles():
+        dstX = x * tw - g.scrollX
+        dstY = y * th - g.scrollY
+        g.screen.blit(image, (dstX, dstY))
+        
+    pass
+    
+def drawTilemapForeground():
     pass
 
 def initStage():
+    global tilemap
     g.tickFunction = tickStage
     if 'darkener' not in g.img:
         g.img['darkener'] = g.pygame.Surface((1920, 1080))
@@ -64,8 +116,26 @@ def initStage():
     stageFadingIn = True
     stageFadingOut = False
     stageAlpha = 0
-    pass
+    g.stageClear = False
     
+    g.stageObjects = []
+    
+    spawnType = {}
+    spawnType['player'] = gameObjects.spawnPlayer
+    spawnType['saucer'] = gameObjects.spawnSaucer
+    spawnType['goblin'] = gameObjects.spawnGoblin
+    
+    for layer in tilemap.visible_layers:
+        if isinstance(layer, pytmx.TiledObjectGroup):
+            for obj in layer:
+                if obj.name in spawnType:
+                    obj.x *= 4
+                    obj.y *= 4
+                    spawnType[obj.name](obj)
+                else:
+                    print(obj.name + ' not in spawner list')
+    pass
+
 def tickStage():
     global backgroundName
     global backgroundImgDict
@@ -76,7 +146,10 @@ def tickStage():
     global stageFadingOut
     
 #update fade
-    stageClear = False
+    if g.stageClear == True:
+        stageFadingOut = True
+    
+    doTransition = False
     fadeSpeed = 1.0 / 1000.0
     if stageFadingIn:
         stageAlpha += g.dt * fadeSpeed
@@ -90,14 +163,14 @@ def tickStage():
             stageAlpha = 0
             stageFadingOut = False
             stageFadingIn = True
-            stageClear = True
+            doTransition = True
     
 # check keys
     if g.keys['escape'] > 0 and g.keys['escape'] <= g.dt:
         escapeMenu = not escapeMenu
         escapeMenuCursorPos = 0
     
-    if stageClear:
+    if doTransition:
         if stage == 1:
             slides.goToSlidesStage2()
         elif stage == 2:
@@ -130,13 +203,41 @@ def tickStage():
     #if g.keys['jump'] > 0 and g.keys['jump'] <= g.dt:
     #    stageFadingIn = False
     #    stageFadingOut = True
+    
+    if not escapeMenu:
+        for o in g.stageObjects:
+            o.tick()
 
 #draw
+    
+
     if backgroundName not in backgroundImgDict:
         fileName = backgroundName + '.png'
         img = g.pygame.image.load(os.path.join('img', 'background', fileName))
-        backgroundImgDict[backgroundName] = g.pygame.transform.scale(img, (1920, 1080))   
+        backgroundImgDict[backgroundName] = g.pygame.transform.scale(img, (1920, 1080)).convert(g.screen)
     g.screen.blit(backgroundImgDict[backgroundName], (0, 0))
+    
+    drawTilemapBackground()
+    
+#draw objects
+    g.shadowSprites = []
+    g.sortedSprites = []
+    
+    for o in g.stageObjects:
+        o.drawShadow()
+    for o in g.stageObjects:
+        o.draw()
+    
+    g.sortedSprites.sort(key = lambda x: x[3])
+    
+    for s in g.shadowSprites:
+        g.screen.blit(s[0], (s[1] - g.scrollX - s[0].width/2, getScreenY(s[2], s[3]) - g.scrollY - s[0].height / 2))
+    for s in g.sortedSprites:
+        g.screen.blit(s[0], (s[1] - g.scrollX - s[0].width/2, getScreenY(s[2], s[3]) - g.scrollY - s[0].height / 2))
+    
+    drawTilemapForeground()
+    
+#draw game UI
     
     if stageAlpha != 1:
         darkenerAlpha = 255 * (1 - stageAlpha)

@@ -10,4 +10,10 @@ def init():
     global volMusic
     global volSound
     global invulnerability
-    
+    global scrollX
+    global scrollY
+    global stageObjects
+    global sortedSprites
+    global shadowSprites
+    global stageClear
+    global player

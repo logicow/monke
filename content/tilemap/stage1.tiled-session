@@ -1,0 +1,68 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "stage1.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "": {
+            "scaleInEditor": 1
+        },
+        "stage1.tmx": {
+            "scale": 2,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 693.75,
+                "y": 308.25
+            }
+        },
+        "stage1.tmx#objectsSet": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1
+        },
+        "stage1.tmx#stage1": {
+            "scaleInDock": 1
+        },
+        "stage2.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 609.6666666666665,
+                "y": 548.3333333333333
+            }
+        },
+        "stage2.tmx#objectsSet": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1
+        },
+        "stage2.tmx#stage1": {
+            "dynamicWrapping": false
+        },
+        "stage2.tmx#stage2": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1
+        },
+        "stage3.tmx#stage2": {
+            "dynamicWrapping": false
+        }
+    },
+    "last.imagePath": "C:/gitMonke/monke/content/img/goblin",
+    "map.height": 24,
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 64,
+    "map.tileWidth": 64,
+    "map.width": 80,
+    "openFiles": [
+        "stage1.tmx"
+    ],
+    "project": "stage1.tiled-project",
+    "recentFiles": [
+        "stage1.tmx"
+    ],
+    "tileset.embedInMap": true,
+    "tileset.type": 1
+}

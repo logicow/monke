@@ -13,7 +13,7 @@ mainMenuSelection = 0
 def goToTitle():
     if 'title' not in g.img:
         imgTitle = pygame.image.load(os.path.join('img', 'title.png'))
-        g.img['title'] = pygame.transform.scale(imgTitle, (1920, 1080))
+        g.img['title'] = pygame.transform.scale(imgTitle, (1920, 1080)).convert(g.screen)
     
     global titlePressStart
     titlePressStart = g.fontBase.render('Press Start', False, (255, 255, 255))

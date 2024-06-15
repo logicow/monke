@@ -14,7 +14,7 @@ def goToOptions():
     
     if 'options' not in g.img:
         img = pygame.image.load(os.path.join('img', 'options.png'))
-        g.img['options'] = pygame.transform.scale(img, (1920, 1080))
+        g.img['options'] = pygame.transform.scale(img, (1920, 1080)).convert(g.screen)
 
     global labelAccept
     labelAccept = g.fontSmall.render('Z: select   X: back', False, colorOff)

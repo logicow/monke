@@ -113,7 +113,7 @@ def tickSlides():
     if slideCurrent not in slideImgDict:
         fileName = slideCurrent + '.png'
         img = g.pygame.image.load(os.path.join('img', 'slides', fileName))
-        slideImgDict[slideCurrent] = g.pygame.transform.scale(img, (1920, 1080))   
+        slideImgDict[slideCurrent] = g.pygame.transform.scale(img, (1920, 1080)).convert(g.screen)
     g.screen.blit(slideImgDict[slideCurrent], (0, 0))
     
     g.screen.blit(labelClose if anyKeyToClose else labelNext, (1400, 1000))
