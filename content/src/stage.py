@@ -283,7 +283,11 @@ def tickStage():
     g.sortedSprites.sort(key = lambda x: x[3])
     
     for s in g.shadowSprites:
-        g.screen.blit(s[0], (s[1] - g.scrollX - s[0].get_width()/2, getScreenY(s[2], s[3]) - g.scrollY - s[0].get_height() / 2))
+        shadowAlpha = int(128.0 + s[2] * 0.25)
+        if shadowAlpha < 0:
+            shadowAlpha = 0
+        s[0].set_alpha(shadowAlpha)
+        g.screen.blit(s[0], (s[1] - g.scrollX - s[0].get_width()/2, getScreenY(0, s[3]) - g.scrollY - s[0].get_height() / 2))
     for s in g.sortedSprites:
         g.screen.blit(s[0], (s[1] - g.scrollX - s[0].get_width()/2, getScreenY(s[2], s[3]) - g.scrollY - s[0].get_height() / 2))
     

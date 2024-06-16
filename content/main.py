@@ -4,6 +4,7 @@ import os
 sys.path.insert(0, 'src')
 import title
 import monkeglobals as g
+import gameObjects
 
 def initDesktopWindow():
     g.screen = g.pygame.display.set_mode((1920, 1080))
@@ -27,6 +28,7 @@ def initMonke():
     g.musicGame = None
     g.musicGame2 = None
     g.pygame.mixer.init()
+    gameObjects.initOnce()
     title.goToTitle()
     pass
 
