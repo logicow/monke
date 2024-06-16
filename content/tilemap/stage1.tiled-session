@@ -14,11 +14,14 @@
             "scaleInEditor": 1
         },
         "stage1.tmx": {
+            "expandedObjectLayers": [
+                3
+            ],
             "scale": 1.5,
-            "selectedLayer": 1,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 561,
-                "y": 160.33333333333331
+                "x": 2553.6666666666665,
+                "y": 688.3333333333333
             }
         },
         "stage1.tmx#objectsSet": {
@@ -37,10 +40,10 @@
         },
         "stage2.tmx": {
             "scale": 1.5,
-            "selectedLayer": 1,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 513,
-                "y": 382.3333333333333
+                "x": 2148.333333333333,
+                "y": 215
             }
         },
         "stage2.tmx#objectsSet": {
@@ -62,10 +65,10 @@
                 3
             ],
             "scale": 1.5,
-            "selectedLayer": 1,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 496.33333333333337,
-                "y": 353.66666666666663
+                "x": 2145,
+                "y": 283.66666666666663
             }
         },
         "stage3.tmx#objectsSet": {
@@ -83,13 +86,14 @@
         },
         "stage4.tmx": {
             "scale": 1.5,
-            "selectedLayer": 1,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 246.33333333333337,
-                "y": 367.66666666666663
+                "x": 2169,
+                "y": 227
             }
         },
         "stage4.tmx#objectsSet": {
+            "dynamicWrapping": true,
             "scaleInDock": 1
         },
         "stage5.tmx": {
@@ -101,12 +105,13 @@
             }
         },
         "stage5.tmx#objectsSet": {
+            "dynamicWrapping": true,
             "scaleInDock": 1
         }
     },
     "last.exportedFilePath": "C:/gitMonke/monke/content/tilemap",
     "last.externalTilesetPath": "C:/gitMonke/monke/content/tilemap",
-    "last.imagePath": "C:/gitMonke/monke/content/img",
+    "last.imagePath": "C:/gitMonke/monke/content/img/saucer",
     "map.height": 24,
     "map.lastUsedExportFilter": "All Files (*)",
     "map.lastUsedFormat": "tmx",

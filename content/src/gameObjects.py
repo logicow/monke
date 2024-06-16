@@ -115,14 +115,14 @@ def tickJump(self):
 def tickMove(self):
     for o in g.stageObjects:
         if o != self and o.collide:
-            dist = math.sqrt(((self.x - o.x) * (self.x - o.x)) + ((self.y - o.y) * (self.y - o.y)) + ((self.z - o.z) * (self.z - o.z)))
+            dist = math.sqrt(((self.x - o.x) * (self.x - o.x)) + ((self.y - o.y) * (self.y - o.y)) + ((self.z - o.z) * (self.z - o.z) * 2.0))
             distInRad = (self.radius + o.radius) - dist
             if distInRad > 0:
                 pushX = (self.x - o.x) / distInRad
                 pushY = (self.y - o.y) / distInRad
                 pushZ = (self.z - o.z) / distInRad
                 self.accelX += pushX * 0.06
-                self.accelY += pushY * 0.01
+                self.accelY += pushY * 0.003
                 self.accelZ += pushZ * 0.06
     
     avgVelX = self.velX + self.accelX * 0.5 * g.dt
@@ -140,7 +140,6 @@ def tickMove(self):
     if self.y + deltaY > - self.radius:
         deltaY = -self.y - self.radius
         self.velY = 0
-    
     
     avgVelZ = self.velZ + self.accelZ * 0.5 * g.dt
     avgVelZ = -self.maxVel if avgVelZ < -self.maxVel else avgVelZ if avgVelZ < self.maxVel else self.maxVel
@@ -170,14 +169,40 @@ def tickPlayerShoot(self):
     else:
         self.cooldown = 0
 
+playerIdle = None
+playerRun = None
+
 class Player:
     def __init__(self, pos):
-        img = g.pygame.image.load(os.path.join('img', 'player', 'idle1.png'))
-        self.image = g.pygame.transform.scale(img, (img.get_width()*4, img.get_height()*4)).convert_alpha(g.screen)
-        self.radius = 64
-        self.x = pos[0] + self.image.get_width()  / 2
+        global playerIdle
+        global playerRun
+        if playerIdle == None:
+            img = g.pygame.image.load(os.path.join('img', 'player', 'idle.png'))
+            playerIdle = []
+            self.curAnimFrames = 6
+            for i in range(0, 6):
+                singleWidth = img.get_width() / self.curAnimFrames;
+                frame = g.pygame.Surface((singleWidth, img.get_height()), g.pygame.SRCALPHA)
+                frame.blit(img, (singleWidth * -i, 0))
+                playerIdle.append(\
+                g.pygame.transform.scale(frame, (frame.get_width() * 4, frame.get_height() * 4)).convert_alpha(g.screen))
+        if playerRun == None:
+            img = g.pygame.image.load(os.path.join('img', 'player', 'run.png'))
+            playerRun = []
+            self.curAnimFrames = 12
+            for i in range(0, 12):
+                singleWidth = img.get_width() / self.curAnimFrames;
+                frame = g.pygame.Surface((singleWidth, img.get_height()), g.pygame.SRCALPHA)
+                frame.blit(img, (singleWidth * -i, 0))
+                playerRun.append(\
+                g.pygame.transform.scale(frame, (frame.get_width() * 4, frame.get_height() * 4)).convert_alpha(g.screen))
+        
+        self.curAnimFrames = 6
+        self.curAnim = playerIdle
+        self.radius = 52
+        self.x = pos[0] + self.curAnim[0].get_width()  / 2
         self.y = -self.radius
-        self.z = pos[1] * 1 + self.image.get_height()
+        self.z = pos[1] * 1 + self.curAnim[0].get_height()
         g.player = self
         self.moveAccel = 0.05
         self.gravity = 0.015
@@ -190,6 +215,8 @@ class Player:
         self.cooldown = 0.0
         self.xDir = 1
         self.collide = True
+        self.curAnimTimer = 0
+        self.curAnimDuration = 100.0 * 6.0
 
     def tick(self):
         
@@ -201,13 +228,25 @@ class Player:
         tickJump(self)
         tickMove(self)
         tickPlayerShoot(self)
+        
+        if self.velX > 1.0 or self.velX < -1 or self.velZ < -1 or self.velZ > 1.0:
+            self.curAnim = playerRun
+            self.curAnimFrames = 12
+            self.curAnimDuration = 100.0 * 12.0
+        else:
+            self.curAnim = playerIdle
+            self.curAnimFrames = 6
+            self.curAnimDuration = 100.0 * 6.0
             
-        g.scrollX = self.x - 960
+        g.scrollX = self.x - 960 + 400
         g.scrollY = getScreenY(0, self.z) - self.radius - 540
         return
     
     def draw(self):
-        g.sortedSprites.append((self.image, self.x, self.y, self.z))
+        self.curAnimTimer += g.dt
+        frameIdx = math.floor((self.curAnimTimer % self.curAnimDuration) * self.curAnimFrames / self.curAnimDuration)
+        image = self.curAnim[frameIdx]
+        g.sortedSprites.append((image, self.x, self.y, self.z))
         return
         
     def drawShadow(self):
@@ -219,22 +258,28 @@ def spawnPlayer(obj):
     newObj = Player((obj.x, obj.y))
     g.stageObjects.append(newObj)
 
+saucerIdle = None
+
 class Saucer:
     def __init__(self, pos):
-        img = g.pygame.image.load(os.path.join('img', 'saucer', 'idle.png'))
-        self.idle = []
+        
+        global saucerIdle
+        if saucerIdle == None:
+            img = g.pygame.image.load(os.path.join('img', 'saucer', 'idle.png'))
+            saucerIdle = []
+            self.curAnimFrames = 5
+            for i in range(0, 5):
+                singleWidth = img.get_width() / self.curAnimFrames;
+                frame = g.pygame.Surface((singleWidth, img.get_height()), g.pygame.SRCALPHA)
+                frame.blit(img, (singleWidth * -i, 0))
+                saucerIdle.append(\
+                g.pygame.transform.scale(frame, (frame.get_width() * 4, frame.get_height() * 4)).convert_alpha(g.screen))
         self.curAnimFrames = 5
-        for i in range(0, 5):
-            singleWidth = img.get_width() / self.curAnimFrames;
-            frame = g.pygame.Surface((singleWidth, img.get_height()), g.pygame.SRCALPHA)
-            frame.blit(img, (singleWidth * -i, 0))
-            self.idle.append(\
-            g.pygame.transform.scale(frame, (frame.get_width() * 4, frame.get_height() * 4)).convert_alpha(g.screen))
         self.radius = 64
-        self.x = pos[0] + self.idle[0].get_width()  / 2
+        self.x = pos[0] + saucerIdle[0].get_width()  / 2
         self.y = -self.radius
-        self.z = pos[1] * 1 + self.idle[0].get_height()
-        self.curAnim = self.idle
+        self.z = pos[1] * 1 + saucerIdle[0].get_height()
+        self.curAnim = saucerIdle
         self.curAnimDuration = 100.0 * 5.0
         self.curAnimTimer = 0.0
         self.collide = True
@@ -248,7 +293,7 @@ class Saucer:
     def draw(self):
         self.curAnimTimer += g.dt
         frameIdx = math.floor((self.curAnimTimer % self.curAnimDuration) * self.curAnimFrames / self.curAnimDuration)
-        image = self.idle[frameIdx]
+        image = self.curAnim[frameIdx]
         g.sortedSprites.append((image, self.x, self.y, self.z))
         return
         
@@ -261,16 +306,29 @@ def spawnSaucer(obj):
     newObj = Saucer((obj.x, obj.y))
     g.stageObjects.append(newObj)
     
-    
+goblinRun = None
 class Goblin:
     def __init__(self, pos):
-        img = g.pygame.image.load(os.path.join('img', 'goblin', 'idle1.png'))
-        self.image = g.pygame.transform.scale(img, (img.get_width() * 4, img.get_height() * 4)).convert_alpha(g.screen)
-        self.radius = 128
-        self.x = pos[0] + self.image.get_width()  / 2
+        global goblinRun
+        if goblinRun == None:
+            img = g.pygame.image.load(os.path.join('img', 'goblin', 'run.png'))
+            goblinRun = []
+            self.curAnimFrames = 5
+            for i in range(0, 5):
+                singleWidth = img.get_width() / self.curAnimFrames;
+                frame = g.pygame.Surface((singleWidth, img.get_height()), g.pygame.SRCALPHA)
+                frame.blit(img, (singleWidth * -i, 0))
+                goblinRun.append(\
+                g.pygame.transform.scale(frame, (frame.get_width() * 4, frame.get_height() * 4)).convert_alpha(g.screen))
+        self.curAnimFrames = 5
+        self.curAnim = goblinRun
+        self.radius = 88
+        self.x = pos[0] + self.curAnim[0].get_width()  / 2
         self.y = -self.radius
-        self.z = pos[1] * 1 + self.image.get_height()
+        self.z = pos[1] * 1 + self.curAnim[0].get_height()
         self.collide = True
+        self.curAnimTimer = 0
+        self.curAnimDuration = 100.0 * 5.0
         
     def tick(self):
         playerDist = math.sqrt(\
@@ -282,7 +340,10 @@ class Goblin:
         return
     
     def draw(self):
-        g.sortedSprites.append((self.image, self.x, self.y, self.z))
+        self.curAnimTimer += g.dt
+        frameIdx = math.floor((self.curAnimTimer % self.curAnimDuration) * self.curAnimFrames / self.curAnimDuration)
+        image = self.curAnim[frameIdx]
+        g.sortedSprites.append((image, self.x, self.y, self.z))
         return
         
     def drawShadow(self):
@@ -295,50 +356,82 @@ def spawnGoblin(obj):
     g.stageObjects.append(newObj)
     
     
-
+dinoriderRun = None
 class Dinorider:
     def __init__(self, pos):
-        img = g.pygame.image.load(os.path.join('img', 'dinorider', 'idle1.png'))
-        self.image = g.pygame.transform.scale(img, (img.get_width() * 4, img.get_height() * 4)).convert_alpha(g.screen)
-        self.radius = 128
-        self.x = pos[0] + self.image.get_width()  / 2
-        self.y = self.radius
-        self.z = pos[1] * 1 + self.image.get_height()
+        global dinoriderRun
+        if dinoriderRun == None:
+            img = g.pygame.image.load(os.path.join('img', 'dinorider', 'run.png'))
+            dinoriderRun = []
+            self.curAnimFrames = 4
+            for i in range(0, 4):
+                singleWidth = img.get_width() / self.curAnimFrames;
+                frame = g.pygame.Surface((singleWidth, img.get_height()), g.pygame.SRCALPHA)
+                frame.blit(img, (singleWidth * -i, 0))
+                dinoriderRun.append(\
+                g.pygame.transform.scale(frame, (frame.get_width() * 4, frame.get_height() * 4)).convert_alpha(g.screen))
+        self.curAnimFrames = 4
+        self.curAnim = dinoriderRun
+        self.radius = 98
+        self.x = pos[0] + self.curAnim[0].get_width()  / 2
+        self.y = -self.radius
+        self.z = pos[1] * 1 + self.curAnim[0].get_height()
         self.collide = True
+        self.curAnimTimer = 0
+        self.curAnimDuration = 100.0 * 4.0
     
     def tick(self):
         return
     
     def draw(self):
-        g.sortedSprites.append((self.image, self.x, self.y, self.z))
+        self.curAnimTimer += g.dt
+        frameIdx = math.floor((self.curAnimTimer % self.curAnimDuration) * self.curAnimFrames / self.curAnimDuration)
+        image = self.curAnim[frameIdx]
+        g.sortedSprites.append((image, self.x, self.y, self.z))
         return
         
     def drawShadow(self):
         global shadowDict
-        g.shadowSprites.append((shadowDict['96'], self.x, self.y + self.radius, self.z))
+        g.shadowSprites.append((shadowDict['128'], self.x, self.y + self.radius, self.z))
         return
 
 def spawnDinorider(obj):
     newObj = Dinorider((obj.x, obj.y))
     g.stageObjects.append(newObj)
     
-    
 
+plantmanRun = None
 class Plantman:
     def __init__(self, pos):
-        img = g.pygame.image.load(os.path.join('img', 'plantman', 'idle1.png'))
-        self.image = g.pygame.transform.scale(img, (img.get_width() * 4, img.get_height() * 4)).convert_alpha(g.screen)
-        self.radius = 128
-        self.x = pos[0] + self.image.get_width()  / 2
+        global plantmanRun
+        if plantmanRun == None:
+            img = g.pygame.image.load(os.path.join('img', 'plantman', 'run.png'))
+            plantmanRun = []
+            self.curAnimFrames = 6
+            for i in range(0, 6):
+                singleWidth = img.get_width() / self.curAnimFrames;
+                frame = g.pygame.Surface((singleWidth, img.get_height()), g.pygame.SRCALPHA)
+                frame.blit(img, (singleWidth * -i, 0))
+                plantmanRun.append(\
+                g.pygame.transform.scale(frame, (frame.get_width() * 4, frame.get_height() * 4)).convert_alpha(g.screen))
+        self.curAnimFrames = 6
+        self.curAnim = plantmanRun
+        self.radius = 60
+        self.x = pos[0] + self.curAnim[0].get_width()  / 2
         self.y = -self.radius
-        self.z = pos[1] * 1 + self.image.get_height()
+        self.z = pos[1] * 1 + self.curAnim[0].get_height()
         self.collide = True
+        self.curAnimTimer = 0
+        self.curAnimDuration = 100.0 * 6.0
     
     def tick(self):
         return
     
     def draw(self):
-        g.sortedSprites.append((self.image, self.x, self.y, self.z))
+        self.curAnimTimer += g.dt
+        frameIdx = math.floor((self.curAnimTimer % self.curAnimDuration) * self.curAnimFrames / self.curAnimDuration)
+        image = self.curAnim[frameIdx]
+        g.sortedSprites.append((image, self.x, self.y, self.z))
         return
         
     def drawShadow(self):
@@ -351,22 +444,38 @@ def spawnPlantman(obj):
     g.stageObjects.append(newObj)
     
     
-    
+enemyblueRun = None
 class EnemyBlue:
     def __init__(self, pos):
-        img = g.pygame.image.load(os.path.join('img', 'enemyblue', 'idle1.png'))
-        self.image = g.pygame.transform.scale(img, (img.get_width() * 4, img.get_height() * 4)).convert_alpha(g.screen)
-        self.radius = 128
-        self.x = pos[0] + self.image.get_width()  / 2
-        self.y = self.radius
-        self.z = pos[1] * 1 + self.image.get_height()
+        global enemyblueRun
+        if enemyblueRun == None:
+            img = g.pygame.image.load(os.path.join('img', 'enemyblue', 'run.png'))
+            enemyblueRun = []
+            self.curAnimFrames = 3
+            for i in range(0, 3):
+                singleWidth = img.get_width() / self.curAnimFrames;
+                frame = g.pygame.Surface((singleWidth, img.get_height()), g.pygame.SRCALPHA)
+                frame.blit(img, (singleWidth * -i, 0))
+                enemyblueRun.append(\
+                g.pygame.transform.scale(frame, (frame.get_width() * 4, frame.get_height() * 4)).convert_alpha(g.screen))
+        self.curAnimFrames = 3
+        self.curAnim = enemyblueRun
+        self.radius = 70
+        self.x = pos[0] + self.curAnim[0].get_width()  / 2
+        self.y = -self.radius
+        self.z = pos[1] * 1 + self.curAnim[0].get_height()
         self.collide = True
+        self.curAnimTimer = 0
+        self.curAnimDuration = 100.0 * 3.0
     
     def tick(self):
         return
     
     def draw(self):
-        g.sortedSprites.append((self.image, self.x, self.y, self.z))
+        self.curAnimTimer += g.dt
+        frameIdx = math.floor((self.curAnimTimer % self.curAnimDuration) * self.curAnimFrames / self.curAnimDuration)
+        image = self.curAnim[frameIdx]
+        g.sortedSprites.append((image, self.x, self.y, self.z))
         return
         
     def drawShadow(self):
@@ -380,7 +489,6 @@ def spawnEnemyBlue(obj):
 
 nextRotatingTimer = 123.456
 class BulletPlayer:
-
     def __init__(self, pos, xDir):
         global nextRotatingTimer
         self.x = pos[0]
@@ -444,10 +552,11 @@ class BulletPlayer:
         return
     
 def spawnBulletPlayer(player):
+    xDir = 1
     posX = player.x
     posY = player.y
     posZ = player.z
-    posX += 80 if player.xDir == 1 else -80
+    posX += 80 if xDir == 1 else -80
     posY -= 10
-    newObj = BulletPlayer((posX, posY, posZ), player.xDir)
+    newObj = BulletPlayer((posX, posY, posZ), xDir)
     g.stageObjects.append(newObj)

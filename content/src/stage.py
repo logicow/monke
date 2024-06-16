@@ -176,6 +176,8 @@ def initStage():
                     
     global stageNameFadeTimer
     stageNameFadeTimer = 0
+    global labelAttack
+    labelAttack = g.fontSmall.render('Z: Jump   X: Shoot', False, colorOff)
     pass
 
 def tickStage():
@@ -312,6 +314,8 @@ def tickStage():
     if stageNameImage.get_alpha() and stageNameImage.get_alpha() > 0:
         posX = 960 - stageNameImage.get_width()/2
         g.screen.blit(stageNameImage, (posX, 300))
+    
+    g.screen.blit(labelAttack, (1440, 1010))
     
     if stageAlpha != 1:
         darkenerAlpha = 255 * (1 - stageAlpha)

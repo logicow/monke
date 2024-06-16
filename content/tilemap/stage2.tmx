@@ -1,18 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="80" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="11">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="80" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="15">
  <tileset firstgid="1" source="stage2.tsx"/>
- <tileset firstgid="257" name="objectsSet" tilewidth="69" tileheight="60" tilecount="3" columns="0">
-  <grid orientation="orthogonal" width="1" height="1"/>
-  <tile id="0">
-   <image width="68" height="60" source="../img/saucer/idle1.png"/>
-  </tile>
-  <tile id="1">
-   <image width="69" height="60" source="../img/player/idle1.png"/>
-  </tile>
-  <tile id="2">
-   <image width="62" height="60" source="../img/goblin/idle1.png"/>
-  </tile>
- </tileset>
  <layer id="1" name="front edge" width="80" height="24">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -69,12 +57,18 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="3" name="Object Layer 1">
-  <object id="4" name="player" gid="258" x="165.31" y="333" width="69.3568" height="60.6667"/>
-  <object id="6" name="saucer" gid="257" x="703.091" y="472.5" width="53.4091" height="47"/>
-  <object id="7" name="saucer" gid="257" x="842.795" y="375.5" width="53.4091" height="47"/>
-  <object id="8" name="saucer" gid="257" x="967.795" y="451.5" width="53.4091" height="47"/>
-  <object id="9" name="saucer" gid="257" x="1099.8" y="372.5" width="53.4091" height="47"/>
-  <object id="10" name="goblin" gid="259" x="2183.67" y="363.333" width="62" height="60"/>
+ <objectgroup id="4" name="Object Layer 1">
+  <object id="11" name="player" x="203.333" y="304">
+   <point/>
+  </object>
+  <object id="12" name="enemyblue" x="787.333" y="447.333">
+   <point/>
+  </object>
+  <object id="13" name="enemyblue" x="984" y="360">
+   <point/>
+  </object>
+  <object id="14" name="goblin" x="2210" y="345.333">
+   <point/>
+  </object>
  </objectgroup>
 </map>
