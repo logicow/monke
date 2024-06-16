@@ -182,4 +182,39 @@
    </object>
   </objectgroup>
  </tile>
+ <tile id="81">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="0" width="32" height="32"/>
+  </objectgroup>
+ </tile>
+ <tile id="82">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="0" width="32" height="32"/>
+  </objectgroup>
+ </tile>
+ <tile id="85">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="0" width="32" height="32"/>
+  </objectgroup>
+ </tile>
+ <tile id="90">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="6" y="0" width="26" height="32"/>
+  </objectgroup>
+ </tile>
+ <tile id="91">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="0" width="24" height="30"/>
+  </objectgroup>
+ </tile>
+ <tile id="93">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="2" width="22" height="30"/>
+  </objectgroup>
+ </tile>
+ <tile id="104">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="0" y="0" width="32" height="32"/>
+  </objectgroup>
+ </tile>
 </tileset>

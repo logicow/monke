@@ -37,11 +37,15 @@ def loadTilemap(filename):
     for idx, image in enumerate(tilemap.images):
         if image != None:
             scaledImage = g.pygame.transform.scale(image, (image.get_width() * 4, image.get_height() * 4))
+            scaledImage.convert()
+            scaledImage.set_colorkey((0, 0, 0))
             tilemap.images[idx] = scaledImage
 
     pass
 
 def goToStage1():
+    #goToStage2()
+    #return
     global backgroundName
     global stage
     backgroundName = '1'
@@ -115,11 +119,29 @@ def drawTileLayer(layer):
     global tilemap
     tw = tilemap.tilewidth
     th = tilemap.tileheight
-    for x, y, image in layer.tiles():
-        dstX = x * tw - g.scrollX
-        dstY = y * th - g.scrollY
-        g.screen.blit(image, (dstX, dstY))
-        
+    xMin = int(g.scrollX / tw)
+    if xMin < 0:
+        xMin = 0
+    xMax = int((g.scrollX + 1920 + tw) / tw)
+    yMin = int(g.scrollY / tw)
+    if yMin < 0:
+        yMin = 0
+    yMax = int((g.scrollY + 1080 + tw) / tw)
+    if yMax > 23:
+        yMax = 23
+    #for x, y, image in layer.tiles():
+    #    dstX = x * tw - g.scrollX
+    #    dstY = y * th - g.scrollY
+    #    g.screen.blit(image, (dstX, dstY))
+    for y in range(yMin, yMax + 1):
+        for x in range(xMin, xMax + 1):
+            dstX = x * tw - g.scrollX
+            dstY = y * th - g.scrollY
+            image = tilemap.images[layer.data[y][x]]
+            if image:
+                g.screen.blit(image, (dstX, dstY))
+
+    
     pass
     
 def drawTilemapForeground():
@@ -177,6 +199,7 @@ def initStage():
                     obj.x *= 4
                     obj.y *= 4
                     spawnType[obj.name](obj)
+                    print(str(obj.name) + ' spawned')
                 else:
                     pass
                     #print(str(obj.name) + ' not in spawner list')
@@ -229,7 +252,8 @@ def tickStage():
             goToStage3()
             return
         elif stage == 3:
-            goToStage4()
+            #goToStage4()
+            slides.goToSlidesStage4()
             return
         elif stage == 4:
             slides.goToSlidesStage5()
@@ -280,7 +304,10 @@ def tickStage():
         fileName = backgroundName + '.png'
         img = g.pygame.image.load(os.path.join('img', 'background', fileName))
         backgroundImgDict[backgroundName] = g.pygame.transform.scale(img, (1920, 1080)).convert(g.screen)
-    g.screen.blit(backgroundImgDict[backgroundName], (0, 0))
+    
+    parallax = (g.scrollX * 0.4) % backgroundImgDict[backgroundName].get_width()
+    g.screen.blit(backgroundImgDict[backgroundName], (-parallax, 0))
+    g.screen.blit(backgroundImgDict[backgroundName], (-parallax + backgroundImgDict[backgroundName].get_width(), 0))
     
     drawTilemapBackground()
     
@@ -310,6 +337,22 @@ def tickStage():
         g.screen.blit(s[0], (s[1] - g.scrollX - s[0].get_width()/2, getScreenY(s[2], s[3]) - g.scrollY - s[0].get_height() / 2))
     
     drawTilemapForeground()
+    
+    backgroundNameTemp = backgroundName + 'b'
+    if backgroundNameTemp not in backgroundImgDict:
+        fileName = backgroundNameTemp + '.png'
+        img = g.pygame.image.load(os.path.join('img', 'background', fileName))
+        backgroundImgDict[backgroundNameTemp] = g.pygame.transform.scale(img, (1920, 320)).convert(g.screen)
+        backgroundImgDict[backgroundNameTemp].set_colorkey((0, 0, 0))
+           
+    parallax = (g.scrollX * 1.5) % backgroundImgDict[backgroundNameTemp].get_width()
+    parallaxY = 760
+    if stage == 2:
+        parallaxY = -g.scrollY + 1500 + 760
+        if parallaxY < 760:
+            parallaxY = 760
+    g.screen.blit(backgroundImgDict[backgroundNameTemp], (-parallax, parallaxY))
+    g.screen.blit(backgroundImgDict[backgroundNameTemp], (-parallax + backgroundImgDict[backgroundNameTemp].get_width(), parallaxY))
     
 #draw game UI
     global stageNameFadeTimer

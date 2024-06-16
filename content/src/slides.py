@@ -12,14 +12,14 @@ slideAlpha = 0
 slideFadingIn = True
 slideFadingOut = False
 slides = [\
-    '1-1', '1-2', '1-3', '1-4', \
-    '2-1', '2-2', '2-3',\
-    '3-1', '3-2', '3-3', '3-4', '3-5', '3-6',\
-    '4-1', '4-2', '4-3', '4-4', '4-5']
+    '1', '2', '3', '4', \
+    '5', '6', '7',\
+    '8', '9', '10', '11', '12', '13',\
+    '14', '15', '16', '17', '18', '19']
 
 def goToSlidesStage1():
     global slideCurrent
-    slideCurrent = '1-1'
+    slideCurrent = '1'
     #g.pygame.mixer.music.load(os.path.join('music', 'cs127_-_the_destination.ogg'))
     #g.pygame.mixer.music.play(-1)
     g.musicTitle.fadeout(500)
@@ -46,19 +46,25 @@ def initSlides():
 
 def goToSlidesStage2():
     global slideCurrent
-    slideCurrent = '2-1'
+    slideCurrent = '5'
+    initSlides()
+    pass
+
+def goToSlidesStage4():
+    global slideCurrent
+    slideCurrent = '8'
     initSlides()
     pass
 
 def goToSlidesStage5():
     global slideCurrent
-    slideCurrent = '3-1'
+    slideCurrent = '10'
     initSlides()
     pass
 
 def goToSlidesEnding():
     global slideCurrent
-    slideCurrent = '4-1'
+    slideCurrent = '14'
     initSlides()
     pass
 
@@ -76,10 +82,11 @@ def tickSlides():
     
     anyKeyToClose = False
     if \
-    slideCurrent == '1-4' or\
-    slideCurrent == '2-3' or\
-    slideCurrent == '3-6' or\
-    slideCurrent == '4-5':
+    slideCurrent == '4' or\
+    slideCurrent == '7' or\
+    slideCurrent == '9' or\
+    slideCurrent == '13' or\
+    slideCurrent == '19':
         anyKeyToClose = True;
     
     #update fade
@@ -96,16 +103,18 @@ def tickSlides():
             slideAlpha = 0
             slideFadingOut = False
             slideFadingIn = True
-            if slideCurrent == '1-4':
+            if slideCurrent == '4':
                 stage.goToStage1()
                 return
-            elif slideCurrent == '2-3':
+            elif slideCurrent == '7':
                 stage.goToStage2()
                 return
-            elif slideCurrent == '3-6':
+            elif slideCurrent == '9':
+                stage.goToStage4()
+            elif slideCurrent == '13':
                 stage.goToStage5()
                 return
-            elif slideCurrent == '4-5':
+            elif slideCurrent == '19':
                 title.goToTitle()
                 return
             else:
@@ -114,10 +123,27 @@ def tickSlides():
                 slideCurrent = slides[curSlideIdx]
     
     # draw
+    curBG = '1'
+    if stage.stage == 2:
+        curBG = '2'
+    elif stage.stage == 3:
+        curBG = '3'
+    elif stage.stage == 4:
+        curBG = '4' 
+    elif stage.stage == 5:
+        curBG = '5'
+        
+    if curBG not in stage.backgroundImgDict:
+        fileName = curBG + '.png'
+        img = g.pygame.image.load(os.path.join('img', 'background', fileName))
+        stage.backgroundImgDict[curBG] = g.pygame.transform.scale(img, (1920, 1080)).convert(g.screen)
+    g.screen.blit(stage.backgroundImgDict[curBG], (0, 0))
+    
     if slideCurrent not in slideImgDict:
         fileName = slideCurrent + '.png'
         img = g.pygame.image.load(os.path.join('img', 'slides', fileName))
         slideImgDict[slideCurrent] = g.pygame.transform.scale(img, (1920, 1080)).convert(g.screen)
+        slideImgDict[slideCurrent].set_colorkey((0, 0, 0))
     g.screen.blit(slideImgDict[slideCurrent], (0, 0))
     
     g.screen.blit(labelClose if anyKeyToClose else labelNext, (1640, 1000))

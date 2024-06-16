@@ -13,7 +13,7 @@ nextRotatingTimer = 1234.56
 def getScreenY(y, z):
     return z + y
 
-def raytrace(x1, y1, z1, x2, y2, z2, obj):
+def raytrace(x1, y1, z1, x2, y2, z2):
     dirX = 1 if x2 >= x1 else -1
     dirZ = 1 if z2 >= z1 else -1
     res = (x2, y2, z2)
@@ -51,7 +51,10 @@ def raytrace(x1, y1, z1, x2, y2, z2, obj):
     
     for layer in floors:
          if isinstance(layer, pytmx.TiledTileLayer):
-            gid = layer.data[int(res[2] / stage.tilemap.tileheight)][int(res[0] / stage.tilemap.tilewidth)]
+            try:
+                gid = layer.data[int(res[2] / stage.tilemap.tileheight)][int(res[0] / stage.tilemap.tilewidth)]
+            except:
+                return (x1, y1, z1)
             p = stage.tilemap.get_tile_properties_by_gid(gid)
             if p and p['colliders']:
                 res = (x1, y1, z1)
@@ -85,48 +88,48 @@ def initOnce():
     subsprite.blit(img, (-118, -23))
     BulletPlayerImg = []
     for i in range(16):
-        BulletPlayerImg.append( g.pygame.transform.rotozoom(subsprite, i * 360.0 / 16.0, 4).convert_alpha(g.screen) )
+        BulletPlayerImg.append( g.pygame.transform.rotozoom(subsprite, i * 360.0 / 16.0, 6).convert_alpha(g.screen) )
         
     global BulletPlantmanImg
     subsprite = g.pygame.Surface((12, 12), g.pygame.SRCALPHA)
     subsprite.blit(img, (-40, -23))
-    BulletPlantmanImg = (g.pygame.transform.scale(subsprite, (subsprite.get_width() * 4, subsprite.get_height() * 4)).convert_alpha(g.screen))
+    BulletPlantmanImg = (g.pygame.transform.scale(subsprite, (subsprite.get_width() * 6, subsprite.get_height() * 6)).convert_alpha(g.screen))
         
     global BulletEnemyBlueImg
     subsprite = g.pygame.Surface((12, 12), g.pygame.SRCALPHA)
     subsprite.blit(img, (-41, -56))
-    BulletEnemyBlueImg = (g.pygame.transform.scale(subsprite, (subsprite.get_width() * 4, subsprite.get_height() * 4)).convert_alpha(g.screen))
+    BulletEnemyBlueImg = (g.pygame.transform.scale(subsprite, (subsprite.get_width() * 6, subsprite.get_height() * 6)).convert_alpha(g.screen))
 
     global BulletGoblinImg
     subsprite = g.pygame.Surface((11, 11), g.pygame.SRCALPHA)
     subsprite.blit(img, (-111, -63))
     BulletGoblinImg = []
     for i in range(16):
-        BulletGoblinImg.append( g.pygame.transform.rotozoom(subsprite, i * 360.0 / 16.0, 4).convert_alpha(g.screen) )
+        BulletGoblinImg.append( g.pygame.transform.rotozoom(subsprite, i * 360.0 / 16.0, 6).convert_alpha(g.screen) )
 
     global BulletSkaterImg
     subsprite = g.pygame.Surface((15, 15), g.pygame.SRCALPHA)
     subsprite.blit(img, (-43, -105))
     BulletSkaterImg = []
     for i in range(16):
-        BulletSkaterImg.append( g.pygame.transform.rotozoom(subsprite, i * 360.0 / 16.0, 4).convert_alpha(g.screen) )
+        BulletSkaterImg.append( g.pygame.transform.rotozoom(subsprite, i * 360.0 / 16.0, 6).convert_alpha(g.screen) )
 
     global BulletSquidImg
     subsprite = g.pygame.Surface((12, 12), g.pygame.SRCALPHA)
     subsprite.blit(img, (-114, -101))
-    BulletSquidImg = (g.pygame.transform.scale(subsprite, (subsprite.get_width() * 4, subsprite.get_height() * 4)).convert_alpha(g.screen))
+    BulletSquidImg = (g.pygame.transform.scale(subsprite, (subsprite.get_width() * 6, subsprite.get_height() * 6)).convert_alpha(g.screen))
     
     global BulletDinoriderImg
     subsprite = g.pygame.Surface((12, 12), g.pygame.SRCALPHA)
     subsprite.blit(img, (-188, -26))
     BulletDinoriderImg = []
     for i in range(16):
-        BulletDinoriderImg.append( g.pygame.transform.rotozoom(subsprite, i * 360.0 / 16.0, 4).convert_alpha(g.screen) )
+        BulletDinoriderImg.append( g.pygame.transform.rotozoom(subsprite, i * 360.0 / 16.0, 6).convert_alpha(g.screen) )
 
     global BulletSaucerImg
     subsprite = g.pygame.Surface((12, 12), g.pygame.SRCALPHA)
     subsprite.blit(img, (-189, -74))
-    BulletSaucerImg = (g.pygame.transform.scale(subsprite, (subsprite.get_width() * 4, subsprite.get_height() * 4)).convert_alpha(g.screen))
+    BulletSaucerImg = (g.pygame.transform.scale(subsprite, (subsprite.get_width() * 6, subsprite.get_height() * 6)).convert_alpha(g.screen))
     
 
 
@@ -227,7 +230,7 @@ def tickMove(self):
     self.velZ = -self.maxVel if self.velZ < -self.maxVel else self.velZ if self.velZ < self.maxVel else self.maxVel
     deltaZ = avgVelZ * g.dt
     
-    destination = raytrace(self.x, self.y, self.z, self.x + deltaX, self.y + deltaY, self.z + deltaZ, self)
+    destination = raytrace(self.x, self.y, self.z, self.x + deltaX, self.y + deltaY, self.z + deltaZ)
     self.x = destination[0]
     self.y = destination[1]
     self.z = destination[2]
@@ -265,7 +268,7 @@ class Player:
                 frame = g.pygame.Surface((singleWidth, img.get_height()), g.pygame.SRCALPHA)
                 frame.blit(img, (singleWidth * -i, 0))
                 playerIdle.append(\
-                g.pygame.transform.scale(frame, (frame.get_width() * 4, frame.get_height() * 4)).convert_alpha(g.screen))
+                g.pygame.transform.scale(frame, (frame.get_width() * 6, frame.get_height() * 6)).convert_alpha(g.screen))
         if playerRun == None:
             img = g.pygame.image.load(os.path.join('img', 'player', 'run.png'))
             playerRun = []
@@ -275,14 +278,14 @@ class Player:
                 frame = g.pygame.Surface((singleWidth, img.get_height()), g.pygame.SRCALPHA)
                 frame.blit(img, (singleWidth * -i, 0))
                 playerRun.append(\
-                g.pygame.transform.scale(frame, (frame.get_width() * 4, frame.get_height() * 4)).convert_alpha(g.screen))
+                g.pygame.transform.scale(frame, (frame.get_width() * 6, frame.get_height() * 6)).convert_alpha(g.screen))
         
         self.curAnimFrames = 6
         self.curAnim = playerIdle
-        self.radius = 52
-        self.x = pos[0] + self.curAnim[0].get_width()  / 2
+        self.radius = 52 * 3/2
+        self.x = pos[0]
         self.y = -self.radius
-        self.z = pos[1] * 1 + self.curAnim[0].get_height()
+        self.z = pos[1]
         g.player = self
         self.moveAccel = 0.05
         self.gravity = 0.015
@@ -299,6 +302,8 @@ class Player:
         self.curAnimDuration = 100.0 * 6.0
         self.isEnemy = False
         self.hp = 3
+        targetScroll = (self.x - 960 + 400)
+        g.scrollX = targetScroll
 
     def tick(self):
         
@@ -319,12 +324,21 @@ class Player:
             self.curAnim = playerIdle
             self.curAnimFrames = 6
             self.curAnimDuration = 100.0 * 6.0
-            
-        g.scrollX = self.x - 960 + 400
+        
+        targetScroll = (self.x - 960 + 400)
+        g.scrollX += g.dt * 2
+        if g.scrollX > targetScroll:
+            g.scrollX = targetScroll
         g.scrollY = getScreenY(0, self.z) - self.radius - 540
         
         if(g.bossScrollX > 0 and g.scrollX > g.bossScrollX) :
             g.scrollX = g.bossScrollX
+        
+        if stage.stage == 1:
+            g.scrollY = 100
+        if(stage.stage == 5):
+            g.scrollY = 100
+            
         return
     
     def draw(self):
@@ -363,7 +377,7 @@ class BulletPlayer:
         self.x = pos[0]
         self.y = pos[1]
         self.z = pos[2]
-        self.radius = 8
+        self.radius = 16
         self.moveAccel = 0.05
         self.gravity = 0.005
         self.velX = 0.6 if xDir == 1 else -0.6
@@ -458,12 +472,12 @@ class Saucer:
                 frame = g.pygame.Surface((singleWidth, img.get_height()), g.pygame.SRCALPHA)
                 frame.blit(img, (singleWidth * -i, 0))
                 saucerIdle.append(\
-                g.pygame.transform.scale(frame, (frame.get_width() * 4, frame.get_height() * 4)).convert_alpha(g.screen))
+                g.pygame.transform.scale(frame, (frame.get_width() * 6, frame.get_height() * 6)).convert_alpha(g.screen))
         self.curAnimFrames = 5
-        self.radius = 64
-        self.x = pos[0] + saucerIdle[0].get_width()  / 2
+        self.radius = 64  * 3/2
+        self.x = pos[0]
         self.y = -self.radius
-        self.z = pos[1] * 1 + saucerIdle[0].get_height()
+        self.z = pos[1]
         self.curAnim = saucerIdle
         self.curAnimDuration = 100.0 * 5.0
         self.curAnimTimer = 0.0
@@ -632,13 +646,13 @@ class Goblin:
                 frame = g.pygame.Surface((singleWidth, img.get_height()), g.pygame.SRCALPHA)
                 frame.blit(img, (singleWidth * -i, 0))
                 goblinRun.append(\
-                g.pygame.transform.scale(frame, (frame.get_width() * 4, frame.get_height() * 4)).convert_alpha(g.screen))
+                g.pygame.transform.scale(frame, (frame.get_width() * 6, frame.get_height() * 6)).convert_alpha(g.screen))
         self.curAnimFrames = 5
         self.curAnim = goblinRun
-        self.radius = 88
-        self.x = pos[0] + self.curAnim[0].get_width()  / 2
+        self.radius = 88 * 3/2
+        self.x = pos[0]
         self.y = -self.radius
-        self.z = pos[1] * 1 + self.curAnim[0].get_height()
+        self.z = pos[1]
         self.collide = True
         self.curAnimTimer = 0
         self.curAnimDuration = 100.0 * 5.0
@@ -810,13 +824,13 @@ class Dinorider:
                 frame = g.pygame.Surface((singleWidth, img.get_height()), g.pygame.SRCALPHA)
                 frame.blit(img, (singleWidth * -i, 0))
                 dinoriderRun.append(\
-                g.pygame.transform.scale(frame, (frame.get_width() * 4, frame.get_height() * 4)).convert_alpha(g.screen))
+                g.pygame.transform.scale(frame, (frame.get_width() * 6, frame.get_height() * 6)).convert_alpha(g.screen))
         self.curAnimFrames = 4
         self.curAnim = dinoriderRun
-        self.radius = 98
-        self.x = pos[0] + self.curAnim[0].get_width()  / 2
+        self.radius = 98 * 3/2
+        self.x = pos[0]
         self.y = -self.radius
-        self.z = pos[1] * 1 + self.curAnim[0].get_height()
+        self.z = pos[1]
         self.collide = True
         self.curAnimTimer = 0
         self.curAnimDuration = 100.0 * 4.0
@@ -983,13 +997,13 @@ class Plantman:
                 frame = g.pygame.Surface((singleWidth, img.get_height()), g.pygame.SRCALPHA)
                 frame.blit(img, (singleWidth * -i, 0))
                 plantmanRun.append(\
-                g.pygame.transform.scale(frame, (frame.get_width() * 4, frame.get_height() * 4)).convert_alpha(g.screen))
+                g.pygame.transform.scale(frame, (frame.get_width() * 6, frame.get_height() * 6)).convert_alpha(g.screen))
         self.curAnimFrames = 6
         self.curAnim = plantmanRun
-        self.radius = 60
-        self.x = pos[0] + self.curAnim[0].get_width()  / 2
+        self.radius = 60 * 3/2
+        self.x = pos[0]
         self.y = -self.radius
-        self.z = pos[1] * 1 + self.curAnim[0].get_height()
+        self.z = pos[1]
         self.collide = True
         self.curAnimTimer = 0
         self.curAnimDuration = 100.0 * 6.0
@@ -1154,13 +1168,13 @@ class EnemyBlue:
                 frame = g.pygame.Surface((singleWidth, img.get_height()), g.pygame.SRCALPHA)
                 frame.blit(img, (singleWidth * -i, 0))
                 enemyblueRun.append(\
-                g.pygame.transform.scale(frame, (frame.get_width() * 4, frame.get_height() * 4)).convert_alpha(g.screen))
+                g.pygame.transform.scale(frame, (frame.get_width() * 6, frame.get_height() * 6)).convert_alpha(g.screen))
         self.curAnimFrames = 3
         self.curAnim = enemyblueRun
-        self.radius = 70
-        self.x = pos[0] + self.curAnim[0].get_width()  / 2
+        self.radius = 70 * 3/2
+        self.x = pos[0]
         self.y = -self.radius
-        self.z = pos[1] * 1 + self.curAnim[0].get_height()
+        self.z = pos[1]
         self.collide = True
         self.curAnimTimer = 0
         self.curAnimDuration = 100.0 * 3.0
@@ -1461,13 +1475,13 @@ class Skater:
                 frame = g.pygame.Surface((singleWidth, img.get_height()), g.pygame.SRCALPHA)
                 frame.blit(img, (singleWidth * -i, 0))
                 skaterRun.append(\
-                g.pygame.transform.scale(frame, (frame.get_width() * 4, frame.get_height() * 4)).convert_alpha(g.screen))
+                g.pygame.transform.scale(frame, (frame.get_width() * 6, frame.get_height() * 6)).convert_alpha(g.screen))
         self.curAnimFrames = 14
         self.curAnim = skaterRun
-        self.radius = 58
-        self.x = pos[0] + self.curAnim[0].get_width()  / 2
+        self.radius = 58 * 3/2
+        self.x = pos[0]
         self.y = -self.radius
-        self.z = pos[1] * 1 + self.curAnim[0].get_height()
+        self.z = pos[1]
         self.collide = True
         self.curAnimTimer = 0
         self.curAnimDuration = 100.0 * 14.0
@@ -1497,6 +1511,11 @@ class Skater:
                 self.shoot()
                 self.attacking = False
         tickMove(self)
+        
+                
+        if g.bossScrollX == -1 :
+            g.bossScrollX = self.x - 1200    
+        
         return
     
     def draw(self):
@@ -1606,7 +1625,6 @@ class BulletSkater:
         if self.duration <= 0:
             g.stageObjects.remove(self)
             return
-        
         return
         
     def draw(self):
@@ -1635,13 +1653,13 @@ class Squid:
                 frame = g.pygame.Surface((singleWidth, img.get_height()), g.pygame.SRCALPHA)
                 frame.blit(img, (singleWidth * -i, 0))
                 squidRun.append(\
-                g.pygame.transform.scale(frame, (frame.get_width() * 4, frame.get_height() * 4)).convert_alpha(g.screen))
+                g.pygame.transform.scale(frame, (frame.get_width() * 6, frame.get_height() * 6)).convert_alpha(g.screen))
         self.curAnimFrames = 8
         self.curAnim = squidRun
-        self.radius = 66
-        self.x = pos[0] + self.curAnim[0].get_width()  / 2
+        self.radius = 66 * 3/2
+        self.x = pos[0]
         self.y = -self.radius
-        self.z = pos[1] * 1 + self.curAnim[0].get_height()
+        self.z = pos[1]
         self.collide = True
         self.curAnimTimer = 0
         self.curAnimDuration = 100.0 * 8.0
@@ -1660,7 +1678,7 @@ class Squid:
         self.moveAccel = 0.05
         self.attacking = False
         self.nextAttack = random.uniform(100, 1000)
-        g.bossScrollX = self.x + 0
+        g.bossScrollX = self.x - 1400
     
     def tick(self):
         tickFrictionStop(self)
@@ -1691,6 +1709,7 @@ class Squid:
         if self.hp <= 0:
             spawnHitStar(self, hitPos)
             g.bossScrollX = -1
+            g.startStageClear = True
             explode(self)
         else:
             spawnHitStar(self, hitPos)

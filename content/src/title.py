@@ -21,17 +21,26 @@ def goToTitle():
     
     global titlePlayOn
     global titlePlayOff
-    titlePlayOn = g.fontBase.render('Play', False, colorOn)
+    labelPlayOnTemp = g.fontBase.render('Play', False, colorOn)
+    titlePlayOn = g.pygame.Surface((labelPlayOnTemp.get_width(), labelPlayOnTemp.get_height()))
+    titlePlayOn.fill((255, 255, 255))
+    titlePlayOn.blit(labelPlayOnTemp, (0, 0))
     titlePlayOff = g.fontBase.render('Play', False, colorOff)
     
     global titleOptionsOn
     global titleOptionsOff
-    titleOptionsOn = g.fontBase.render('Options', False, colorOn)
+    labelOptionsOnTemp = g.fontBase.render('Options', False, colorOn)
+    titleOptionsOn = g.pygame.Surface((labelOptionsOnTemp.get_width(), labelOptionsOnTemp.get_height()))
+    titleOptionsOn.fill((255, 255, 255))
+    titleOptionsOn.blit(labelOptionsOnTemp, (0, 0))
     titleOptionsOff = g.fontBase.render('Options', False, colorOff)
     
     global titleQuitOn
     global titleQuitOff
-    titleQuitOn = g.fontBase.render('Quit', False, colorOn)
+    titleQuitOnTemp = g.fontBase.render('Quit', False, colorOn)
+    titleQuitOn = g.pygame.Surface((titleQuitOnTemp.get_width(), titleQuitOnTemp.get_height()))
+    titleQuitOn.fill((255, 255, 255))
+    titleQuitOn.blit(titleQuitOnTemp, (0, 0))
     titleQuitOff = g.fontBase.render('Quit', False, colorOff)
     
     global labelAccept

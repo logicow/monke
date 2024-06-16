@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "stage1.tmx",
+    "activeFile": "stage41.tmx",
     "expandedProjectPaths": [
         "."
     ],
@@ -17,11 +17,11 @@
             "expandedObjectLayers": [
                 3
             ],
-            "scale": 1.5,
-            "selectedLayer": 2,
+            "scale": 1,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 1146.3333333333333,
-                "y": 347.66666666666663
+                "x": 1467.5,
+                "y": 49.5
             }
         },
         "stage1.tmx#objectsSet": {
@@ -36,17 +36,19 @@
             "scaleInEditor": 1
         },
         "stage1.tsx": {
-            "dynamicWrapping": false
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 4
         },
         "stage2.tmx": {
             "expandedObjectLayers": [
                 4
             ],
-            "scale": 1.5,
+            "scale": 1,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 1263.6666666666665,
-                "y": 409.66666666666663
+                "x": 1075.5,
+                "y": 250.5
             }
         },
         "stage2.tmx#objectsSet": {
@@ -61,7 +63,8 @@
             "scaleInDock": 1
         },
         "stage2.tsx": {
-            "scaleInDock": 1
+            "scaleInDock": 1,
+            "scaleInEditor": 1
         },
         "stage3.tmx": {
             "expandedObjectLayers": [
@@ -70,8 +73,8 @@
             "scale": 1.5,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 888.3333333333333,
-                "y": 420.3333333333333
+                "x": 1893.6666666666665,
+                "y": 291
             }
         },
         "stage3.tmx#objectsSet": {
@@ -87,6 +90,9 @@
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
+        "stage3.tsx": {
+            "scaleInDock": 1
+        },
         "stage4.tmx": {
             "expandedObjectLayers": [
                 4
@@ -94,23 +100,34 @@
             "scale": 1.5,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 1419.6666666666665,
-                "y": 446.3333333333333
+                "x": 1669,
+                "y": 214.33333333333331
             }
         },
         "stage4.tmx#objectsSet": {
             "dynamicWrapping": true,
             "scaleInDock": 1
         },
+        "stage41.tmx": {
+            "expandedObjectLayers": [
+                4
+            ],
+            "scale": 1,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1131.5,
+                "y": 407.5
+            }
+        },
         "stage5.tmx": {
             "expandedObjectLayers": [
                 3
             ],
             "scale": 1.5,
-            "selectedLayer": 2,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 505.6666666666666,
-                "y": 377
+                "x": 1279.6666666666665,
+                "y": 384.3333333333333
             }
         },
         "stage5.tmx#objectsSet": {
@@ -129,13 +146,23 @@
     "map.width": 80,
     "openFiles": [
         "stage3.tmx",
-        "stage1.tmx"
+        "stage1.tmx",
+        "stage1.tsx",
+        "stage2.tmx",
+        "stage41.tmx",
+        "stage5.tmx",
+        "stage2.tsx"
     ],
     "project": "stage1.tiled-project",
     "recentFiles": [
-        "stage4.tmx",
         "stage3.tmx",
-        "stage1.tmx"
+        "stage1.tmx",
+        "stage1.tsx",
+        "stage2.tmx",
+        "stage2.tsx",
+        "stage5.tmx",
+        "stage41.tmx",
+        "stage4.tmx"
     ],
     "tileset.embedInMap": true,
     "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
