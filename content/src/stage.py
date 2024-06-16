@@ -7,6 +7,7 @@ import title
 import pytmx
 from util_pygame import load_pygame
 import gameObjects
+import stage
 
 colorOn = (255, 0, 0)
 colorOff = (255, 255, 255)
@@ -23,7 +24,7 @@ stageNameImage = None
 stageNameFadeTimer = 0
 
 def getScreenY(y, z):
-    return z/2 - y
+    return z/1 + y
 
 def loadTilemap(filename):
     global tilemap
@@ -170,7 +171,8 @@ def initStage():
                     obj.y *= 4
                     spawnType[obj.name](obj)
                 else:
-                    print(obj.name + ' not in spawner list')
+                    pass
+                    #print(str(obj.name) + ' not in spawner list')
                     
     global stageNameFadeTimer
     stageNameFadeTimer = 0

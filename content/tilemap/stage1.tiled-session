@@ -10,14 +10,15 @@
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
         "": {
+            "scaleInDock": 1,
             "scaleInEditor": 1
         },
         "stage1.tmx": {
-            "scale": 2,
-            "selectedLayer": 2,
+            "scale": 1.5,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 693.75,
-                "y": 308.25
+                "x": 561,
+                "y": 160.33333333333331
             }
         },
         "stage1.tmx#objectsSet": {
@@ -25,14 +26,21 @@
             "scaleInDock": 1
         },
         "stage1.tmx#stage1": {
+            "dynamicWrapping": false,
             "scaleInDock": 1
+        },
+        "stage1.tmx#stage2": {
+            "scaleInEditor": 1
+        },
+        "stage1.tsx": {
+            "dynamicWrapping": false
         },
         "stage2.tmx": {
             "scale": 1.5,
-            "selectedLayer": 2,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 609.6666666666665,
-                "y": 548.3333333333333
+                "x": 513,
+                "y": 382.3333333333333
             }
         },
         "stage2.tmx#objectsSet": {
@@ -46,41 +54,76 @@
             "dynamicWrapping": false,
             "scaleInDock": 1
         },
+        "stage2.tsx": {
+            "scaleInDock": 1
+        },
         "stage3.tmx": {
             "expandedObjectLayers": [
                 3
             ],
             "scale": 1.5,
-            "selectedLayer": 2,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 343,
-                "y": -34.333333333333314
+                "x": 496.33333333333337,
+                "y": 353.66666666666663
             }
         },
         "stage3.tmx#objectsSet": {
             "dynamicWrapping": true,
-            "scaleInDock": 1
+            "scaleInDock": 1,
+            "scaleInEditor": 1
         },
         "stage3.tmx#stage2": {
             "dynamicWrapping": false
         },
         "stage3.tmx#stage3": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "stage4.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 246.33333333333337,
+                "y": 367.66666666666663
+            }
+        },
+        "stage4.tmx#objectsSet": {
+            "scaleInDock": 1
+        },
+        "stage5.tmx": {
+            "scale": 0.795625,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 1280.1256873527102,
+                "y": 385.23173605655927
+            }
+        },
+        "stage5.tmx#objectsSet": {
             "scaleInDock": 1
         }
     },
-    "last.imagePath": "C:/gitMonke/monke/content/img/plantman",
+    "last.exportedFilePath": "C:/gitMonke/monke/content/tilemap",
+    "last.externalTilesetPath": "C:/gitMonke/monke/content/tilemap",
+    "last.imagePath": "C:/gitMonke/monke/content/img",
     "map.height": 24,
+    "map.lastUsedExportFilter": "All Files (*)",
     "map.lastUsedFormat": "tmx",
     "map.tileHeight": 64,
     "map.tileWidth": 64,
     "map.width": 80,
     "openFiles": [
+        "stage3.tmx",
         "stage1.tmx"
     ],
     "project": "stage1.tiled-project",
     "recentFiles": [
+        "stage4.tmx",
+        "stage3.tmx",
         "stage1.tmx"
     ],
     "tileset.embedInMap": true,
-    "tileset.type": 1
+    "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
+    "tileset.type": 0
 }
