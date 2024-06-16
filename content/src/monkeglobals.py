@@ -13,6 +13,7 @@ def init():
     global scrollX
     global scrollY
     global stageObjects
+    global stageCosmetic
     global sortedSprites
     global shadowSprites
     global stageClear
@@ -21,3 +22,6 @@ def init():
     global musicTitle
     global musicGame
     global musicGame2
+    global startStageClear
+    global stageClearTimer
+    global bossScrollX

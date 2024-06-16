@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="80" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="15">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="80" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="22">
  <editorsettings>
   <export target="stage5.tmx" format="tmx"/>
  </editorsettings>
@@ -64,13 +64,22 @@
   <object id="11" name="player" x="192" y="309.333">
    <point/>
   </object>
-  <object id="12" name="dinorider" x="782" y="442.667">
+  <object id="12" name="dinorider" x="1425.33" y="515.333">
    <point/>
   </object>
-  <object id="13" name="dinorider" x="1521.33" y="522.667">
+  <object id="16" name="skater" x="2197.33" y="342">
    <point/>
   </object>
-  <object id="14" name="goblin" x="2208.67" y="334">
+  <object id="17" name="dinorider" x="1511.33" y="586">
+   <point/>
+  </object>
+  <object id="19" name="goblin" x="897.333" y="354.667">
+   <point/>
+  </object>
+  <object id="20" name="goblin" x="1009.33" y="392.667">
+   <point/>
+  </object>
+  <object id="21" name="goblin" x="814" y="475.333">
    <point/>
   </object>
  </objectgroup>

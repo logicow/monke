@@ -20,8 +20,8 @@
             "scale": 1.5,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 2553.6666666666665,
-                "y": 688.3333333333333
+                "x": 1146.3333333333333,
+                "y": 347.66666666666663
             }
         },
         "stage1.tmx#objectsSet": {
@@ -39,11 +39,14 @@
             "dynamicWrapping": false
         },
         "stage2.tmx": {
+            "expandedObjectLayers": [
+                4
+            ],
             "scale": 1.5,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 2148.333333333333,
-                "y": 215
+                "x": 1263.6666666666665,
+                "y": 409.66666666666663
             }
         },
         "stage2.tmx#objectsSet": {
@@ -67,8 +70,8 @@
             "scale": 1.5,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 2145,
-                "y": 283.66666666666663
+                "x": 888.3333333333333,
+                "y": 420.3333333333333
             }
         },
         "stage3.tmx#objectsSet": {
@@ -85,11 +88,14 @@
             "scaleInEditor": 1
         },
         "stage4.tmx": {
+            "expandedObjectLayers": [
+                4
+            ],
             "scale": 1.5,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 2169,
-                "y": 227
+                "x": 1419.6666666666665,
+                "y": 446.3333333333333
             }
         },
         "stage4.tmx#objectsSet": {
@@ -97,11 +103,14 @@
             "scaleInDock": 1
         },
         "stage5.tmx": {
-            "scale": 0.795625,
-            "selectedLayer": 1,
+            "expandedObjectLayers": [
+                3
+            ],
+            "scale": 1.5,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 1280.1256873527102,
-                "y": 385.23173605655927
+                "x": 505.6666666666666,
+                "y": 377
             }
         },
         "stage5.tmx#objectsSet": {

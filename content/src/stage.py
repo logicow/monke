@@ -153,8 +153,12 @@ def initStage():
     g.stageClear = False
     g.scrollX = 0
     g.scrollY = 0
+    g.startStageClear = False
+    g.stageClearTimer = 0
+    g.bossScrollX = -1
     
     g.stageObjects = []
+    g.stageCosmetic = []
     
     spawnType = {}
     spawnType['player'] = gameObjects.spawnPlayer
@@ -163,6 +167,9 @@ def initStage():
     spawnType['enemyblue'] = gameObjects.spawnEnemyBlue
     spawnType['dinorider'] = gameObjects.spawnDinorider
     spawnType['plantman'] = gameObjects.spawnPlantman
+    spawnType['skater'] = gameObjects.spawnSkater
+    spawnType['squid'] = gameObjects.spawnSquid
+    
     for layer in tilemap.visible_layers:
         if isinstance(layer, pytmx.TiledObjectGroup):
             for obj in layer:
@@ -257,8 +264,14 @@ def tickStage():
     
     if not escapeMenu:
         for o in g.stageObjects:
-            pass
             o.tick()
+        for o in g.stageCosmetic:
+            o.tick()
+
+    if g.startStageClear:
+        g.stageClearTimer += g.dt
+        if g.stageClearTimer >= 2000:
+            g.stageClear = True
 
 #draw
     
@@ -276,10 +289,13 @@ def tickStage():
     g.sortedSprites = []
     
     for o in g.stageObjects:
-        pass
         o.drawShadow()
     for o in g.stageObjects:
-        pass
+        o.draw()
+    
+    for o in g.stageCosmetic:
+        o.drawShadow()
+    for o in g.stageCosmetic:
         o.draw()
     
     g.sortedSprites.sort(key = lambda x: x[3])

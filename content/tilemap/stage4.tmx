@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="80" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="19">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="80" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="21">
  <tileset firstgid="1" source="stage3.tsx"/>
  <layer id="1" name="front edge" width="80" height="24">
   <data encoding="csv">
@@ -64,10 +64,10 @@
   <object id="12" name="plantman" x="762" y="404.667">
    <point/>
   </object>
-  <object id="13" name="plantman" x="896" y="439.333">
+  <object id="13" name="plantman" x="920" y="453.333">
    <point/>
   </object>
-  <object id="14" name="plantman" x="1000.67" y="300.667">
+  <object id="14" name="plantman" x="1048.67" y="323.333">
    <point/>
   </object>
   <object id="15" name="saucer" x="2010" y="226.667">
@@ -79,7 +79,10 @@
   <object id="17" name="saucer" x="2207.33" y="485.333">
    <point/>
   </object>
-  <object id="18" name="goblin" x="2198" y="321.333">
+  <object id="19" name="saucer" x="1633.33" y="515.333">
+   <point/>
+  </object>
+  <object id="20" name="skater" x="2194.67" y="340.667">
    <point/>
   </object>
  </objectgroup>
