@@ -78,9 +78,13 @@ def tickSlides():
     
     # check keys 
     if g.keys['anykey'] > 0 and g.keys['anykey'] <= g.dt:
+        if not slideFadingOut:
+            ow = g.pygame.mixer.Sound(os.path.join('sfx', 'Select8-Bit.ogg'))
+            ow.set_volume(g.volSound * 0.01 * 0.5)
+            ow.play()
         slideFadingIn = False
         slideFadingOut = True
-    
+        
     anyKeyToClose = False
     if \
     slideCurrent == '4' or\

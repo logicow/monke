@@ -29,11 +29,11 @@ def goToTitle():
     
     global titleOptionsOn
     global titleOptionsOff
-    labelOptionsOnTemp = g.fontBase.render('Options', False, colorOn)
+    labelOptionsOnTemp = g.fontBase.render('Settings', False, colorOn)
     titleOptionsOn = g.pygame.Surface((labelOptionsOnTemp.get_width(), labelOptionsOnTemp.get_height()))
     titleOptionsOn.fill((255, 255, 255))
     titleOptionsOn.blit(labelOptionsOnTemp, (0, 0))
-    titleOptionsOff = g.fontBase.render('Options', False, colorOff)
+    titleOptionsOff = g.fontBase.render('Settings', False, colorOff)
     
     global titleQuitOn
     global titleQuitOff
@@ -76,6 +76,9 @@ def title():
         g.tickFunction = titleMenu
         g.keys['menuSelect'] = g.dt + 1
         titleMenu()
+        ow = g.pygame.mixer.Sound(os.path.join('sfx', 'Confirm8-Bit.ogg'))
+        ow.set_volume(g.volSound * 0.01 * 0.5)
+        ow.play()
         return
         
     if g.keys['escape']:
@@ -110,11 +113,17 @@ def titleMenu():
     # check keys
     if g.keys['up'] <= g.dt and g.keys['up'] > 0:
         mainMenuSelection -= 1
+        ow = g.pygame.mixer.Sound(os.path.join('sfx', 'Select8-Bit.ogg'))
+        ow.set_volume(g.volSound * 0.01 * 0.5)
+        ow.play()
         if mainMenuSelection < 0:
             mainMenuSelection = 2
             
     if g.keys['down'] <= g.dt and g.keys['down'] > 0:
         mainMenuSelection += 1
+        ow = g.pygame.mixer.Sound(os.path.join('sfx', 'Select8-Bit.ogg'))
+        ow.set_volume(g.volSound * 0.01 * 0.5)
+        ow.play()
         if mainMenuSelection >= numMenuOptions:
             mainMenuSelection = 0
     
@@ -124,6 +133,9 @@ def titleMenu():
             return
     
     if g.keys['menuSelect'] <= g.dt and g.keys['menuSelect'] > 0:
+        ow = g.pygame.mixer.Sound(os.path.join('sfx', 'Confirm8-Bit.ogg'))
+        ow.set_volume(g.volSound * 0.01 * 0.5)
+        ow.play()
         if mainMenuSelection == 0:
             slides.goToSlidesStage1()
         if mainMenuSelection == 1:

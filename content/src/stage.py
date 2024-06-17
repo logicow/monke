@@ -87,6 +87,7 @@ def goToStage4():
     global stageNameImage
     stageNameImage = g.fontBase.render('Stage 4: The War', False, colorOff).convert_alpha()
     g.musicGame.fadeout(1000)
+    g.musicGame2.stop()
     g.musicGame2.play()
     g.musicGame2.set_volume(g.volMusic / 100.0)
     initStage()
@@ -155,18 +156,18 @@ def initStage():
         g.img['darkener'] = g.pygame.Surface((1920, 1080))
     global labelReturnOff
     global labelReturnOn
-    labelReturnOff = g.fontSmall.render('Return to game', False, colorOff)
-    labelReturnOn = g.fontSmall.render('Return to game', False, colorOn)
+    labelReturnOff = g.fontSmall.render('Return to game', False, (0xab, 0x51, 0x30))
+    labelReturnOn = g.fontSmall.render('Return to game', False, (255, 255, 255))
     
     global labelOptionsOff
     global labelOptionsOn
-    labelOptionsOff = g.fontSmall.render('Options', False, colorOff)
-    labelOptionsOn = g.fontSmall.render('Options', False, colorOn)
+    labelOptionsOff = g.fontSmall.render('Settings', False, (0xab, 0x51, 0x30))
+    labelOptionsOn = g.fontSmall.render('Settings', False, (255, 255, 255))
     
     global labelBackToMainOff
     global labelBackToMainOn
-    labelBackToMainOff = g.fontSmall.render('Back to Main Menu', False, colorOff)
-    labelBackToMainOn = g.fontSmall.render('Back to Main Menu', False, colorOn)
+    labelBackToMainOff = g.fontSmall.render('Back to Main Menu', False, (0xab, 0x51, 0x30))
+    labelBackToMainOn = g.fontSmall.render('Back to Main Menu', False, (255, 255, 255))
     
     g.keys['menuSelect'] = g.dt + 1
     escapeMenu = False
@@ -225,6 +226,11 @@ def initStage():
     healthOff = (g.pygame.transform.scale(img, (img.get_width() * 6, img.get_height() * 6)).convert(g.screen))
     healthOff.set_colorkey((0, 0, 0))
     
+    global pausedImg
+    img = g.pygame.image.load(os.path.join('img', 'paused.png'))
+    pausedImg = (g.pygame.transform.scale(img, (img.get_width() * 6, img.get_height() * 6)).convert(g.screen))
+    pausedImg.set_colorkey((0, 0, 0))
+    
     pass
 
 def tickStage():
@@ -263,6 +269,9 @@ def tickStage():
 # check keys
     if g.keys['escape'] > 0 and g.keys['escape'] <= g.dt:
         escapeMenu = not escapeMenu
+        ow = g.pygame.mixer.Sound(os.path.join('sfx', 'Cancel8-Bit.ogg'))
+        ow.set_volume(g.volSound * 0.01 * 0.5)
+        ow.play()
         escapeMenuCursorPos = 0
     
     if doTransition:
@@ -303,15 +312,24 @@ def tickStage():
     if escapeMenu:
         if g.keys['up'] <= g.dt and g.keys['up'] > 0:
             escapeMenuCursorPos -= 1
+            ow = g.pygame.mixer.Sound(os.path.join('sfx', 'Select8-Bit.ogg'))
+            ow.set_volume(g.volSound * 0.01 * 0.5)
+            ow.play()
             if escapeMenuCursorPos < 0:
                 escapeMenuCursorPos = 2
                 
         if g.keys['down'] <= g.dt and g.keys['down'] > 0:
             escapeMenuCursorPos += 1
+            ow = g.pygame.mixer.Sound(os.path.join('sfx', 'Select8-Bit.ogg'))
+            ow.set_volume(g.volSound * 0.01 * 0.5)
+            ow.play()
             if escapeMenuCursorPos >= 3:
                 escapeMenuCursorPos = 0
                 
         if g.keys['menuSelect'] <= g.dt and g.keys['menuSelect'] > 0:
+            ow = g.pygame.mixer.Sound(os.path.join('sfx', 'Confirm8-Bit.ogg'))
+            ow.set_volume(g.volSound * 0.01 * 0.5)
+            ow.play()
             if escapeMenuCursorPos == 0:
                 escapeMenu = False
             elif escapeMenuCursorPos == 1:
@@ -431,9 +449,10 @@ def tickStage():
     if escapeMenu:
         g.img['darkener'].set_alpha(128)
         g.screen.blit(g.img['darkener'], (0, 0))
-        g.screen.blit(labelReturnOn if escapeMenuCursorPos == 0 else labelReturnOff, (760, 450))
-        g.screen.blit(labelOptionsOn if escapeMenuCursorPos == 1 else labelOptionsOff, (760, 500))
-        g.screen.blit(labelBackToMainOn if escapeMenuCursorPos == 2 else labelBackToMainOff, (760, 550))
+        g.screen.blit(pausedImg, (264, 180))
+        g.screen.blit(labelReturnOn if escapeMenuCursorPos == 0 else labelReturnOff, (770, 450))
+        g.screen.blit(labelOptionsOn if escapeMenuCursorPos == 1 else labelOptionsOff, (770, 500))
+        g.screen.blit(labelBackToMainOn if escapeMenuCursorPos == 2 else labelBackToMainOff, (770, 550))
     
     if g.debugString:
         debugLabel = g.fontSmall.render(g.debugString, False, (255, 255, 255))

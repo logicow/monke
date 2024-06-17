@@ -255,6 +255,9 @@ def tickPlayerShoot(self):
     if g.keys['attack'] > 0:
         self.cooldown += 100;
         spawnBulletPlayer(self)
+        ow = g.pygame.mixer.Sound(os.path.join('sfx', 'watersplat.ogg'))
+        ow.set_volume(g.volSound * 0.01 * 0.1)
+        ow.play()
     else:
         self.cooldown = 0
 
@@ -379,14 +382,20 @@ class Player:
             return
         self.blinktimer = 2000
         self.hp -= 1
-        if self.hp <= 0:
+        if self.hp <= 0 and self.playerDeadTimer <= 0:
             spawnHitStar(self, hitPos)
             self.playerDeadTimer += 1
             explode(self)
             #explode removes, so re-add to scene
             g.stageObjects.append(self)
+            ow = g.pygame.mixer.Sound(os.path.join('sfx', 'BossDeath.ogg'))
+            ow.set_volume(g.volSound * 0.01 * 0.6)
+            ow.play()
         else:
             spawnHitStar(self, hitPos)
+            ow = g.pygame.mixer.Sound(os.path.join('sfx', 'Collision8-Bit.ogg'))
+            ow.set_volume(g.volSound * 0.01)
+            ow.play()
         pushDist = math.sqrt((self.x - hitPos[0]) * (self.x - hitPos[0]) + (self.z - hitPos[2]) * (self.z - hitPos[2]))
         pushX = (self.x - hitPos[0]) / pushDist
         pushZ = (self.z - hitPos[2]) / pushDist
@@ -445,6 +454,15 @@ class BulletPlayer:
                 distInRad = (self.radius + o.radius) - dist
                 if distInRad > 0:
                     o.hit((self.x, self.y, self.z))
+                    if o.hp > 0:
+                        ow = g.pygame.mixer.Sound(os.path.join('sfx', 'Thip.ogg'))
+                        ow.set_volume(g.volSound * 0.01)
+                        ow.play()
+                    else:
+                        ow = g.pygame.mixer.Sound(os.path.join('sfx', 'SmallExplosion8-Bit.ogg'))
+                        ow.set_volume(g.volSound * 0.01 * 0.4)
+                        ow.play()
+                        
                     self.breakBullet()
         
         avgVelZ = self.velZ + self.accelZ * 0.5 * g.dt
@@ -513,7 +531,7 @@ class Saucer:
         self.timer = nextRotatingTimer
         nextRotatingTimer += 67.89
         self.isEnemy = True
-        self.hp = 3
+        self.hp = 2
         self.gravity = 0.000
         self.velX = 0.0
         self.velY = 0.0
@@ -521,8 +539,8 @@ class Saucer:
         self.accelX = 0
         self.accelY = self.gravity
         self.accelZ = 0
-        self.maxVel = 2.2
-        self.moveAccel = 0.05
+        self.maxVel = 1.6
+        self.moveAccel = 0.03
         self.attacking = False
         self.nextAttack = random.uniform(1000, 4000)
         
@@ -625,7 +643,7 @@ class BulletSaucer:
         nextRotatingTimer += 456.789
         self.collide = False
         self.isEnemy = False
-        self.duration = 10000.0
+        self.duration = 8000.0
         return
     
     def breakBullet(self):
@@ -1170,8 +1188,8 @@ class Plantman:
             return;
         #newObj = BulletPlantman((self.x, self.y, self.z), self)
         #g.stageObjects.append(newObj)
-        for i in range(60):
-            angle = i * 360 / 60
+        for i in range(50):
+            angle = i * 360 / 50
             newObj = BulletPlantman((self.x, -40, self.z), self, angle)
             g.stageObjects.append(newObj)
         
@@ -1203,7 +1221,7 @@ class BulletPlantman:
         nextRotatingTimer += 456.789
         self.collide = False
         self.isEnemy = False
-        self.duration = 10000.0
+        self.duration = 6000.0
         return
     
     def breakBullet(self):
@@ -1587,10 +1605,12 @@ def explodeSmall(self):
 
 
 skaterRun = None
+portalAnim = None
 class Skater:
     def __init__(self, pos):
         global skaterRun
         global nextRotatingTimer
+        global portalAnim
         if skaterRun == None:
             img = g.pygame.image.load(os.path.join('img', 'skater', 'run.png'))
             skaterRun = []
@@ -1600,6 +1620,16 @@ class Skater:
                 frame = g.pygame.Surface((singleWidth, img.get_height()), g.pygame.SRCALPHA)
                 frame.blit(img, (singleWidth * -i, 0))
                 skaterRun.append(\
+                g.pygame.transform.scale(frame, (frame.get_width() * 6, frame.get_height() * 6)).convert_alpha(g.screen))
+        if portalAnim == None:
+            img = g.pygame.image.load(os.path.join('img', 'portal', 'portal.png'))
+            portalAnim = []
+            self.curAnimFrames = 8
+            for i in range(0, 8):
+                singleWidth = img.get_width() / self.curAnimFrames;
+                frame = g.pygame.Surface((singleWidth, img.get_height()), g.pygame.SRCALPHA)
+                frame.blit(img, (singleWidth * -i, 0))
+                portalAnim.append(\
                 g.pygame.transform.scale(frame, (frame.get_width() * 6, frame.get_height() * 6)).convert_alpha(g.screen))
         self.curAnimFrames = 14
         self.curAnim = skaterRun
@@ -1630,8 +1660,13 @@ class Skater:
         self.baseZ = self.z
         self.timer = nextRotatingTimer
         nextRotatingTimer += 456.789
+        self.doPortalAnim = 0
     
     def tick(self):
+        if self.doPortalAnim > 0:
+            self.doPortalAnim  += g.dt
+            self.isEnemy = False
+            return
         tickFrictionStop(self)
         
         self.timer += g.dt
@@ -1663,10 +1698,20 @@ class Skater:
         return
     
     def draw(self):
+        global portalAnim
+        self.curAnimFrames = 14
+        self.curAnimDuration = 100.0 * 14.0
         self.curAnimTimer += g.dt
         frameIdx = math.floor((self.curAnimTimer % self.curAnimDuration) * self.curAnimFrames / self.curAnimDuration)
         image = self.curAnim[frameIdx]
         g.sortedSprites.append((image, self.x, self.y, self.z))
+        
+        if self.doPortalAnim > 0:
+            self.curAnimFrames = 8
+            self.curAnimDuration = 100.0 * 8.0
+            frameIdx = math.floor((self.curAnimTimer % self.curAnimDuration) * self.curAnimFrames / self.curAnimDuration)
+            image = portalAnim[frameIdx]
+            g.sortedSprites.append((image, self.x, self.y, self.z - 0.01))
         return
         
     def drawShadow(self):
@@ -1679,7 +1724,8 @@ class Skater:
         if self.hp <= 0:
             spawnHitStar(self, hitPos)
             g.startStageClear = True
-            explode(self)
+            self.doPortalAnim += g.dt
+            #explode(self)
         else:
             spawnHitStar(self, hitPos)
         pushDist = math.sqrt((self.x - hitPos[0]) * (self.x - hitPos[0]) + (self.z - hitPos[2]) * (self.z - hitPos[2]))
@@ -1822,7 +1868,7 @@ class Squid:
         self.curAnimTimer = 0
         self.curAnimDuration = 100.0 * 8.0
         self.isEnemy = True
-        self.hp = 16
+        self.hp = 20
         self.attacking = False
         self.nextAttack = random.uniform(100, 1000)
         self.gravity = 0.007

@@ -3,8 +3,8 @@ import os
 import monkeglobals as g
 import sys
 
-colorOn = (255, 0, 0)
-colorOff = (255, 255, 255)
+colorOn = (255, 255, 255)
+colorOff = (0xab, 0x51, 0x30)
 optionsSelection = 0
 returnTo = None
 
@@ -17,7 +17,7 @@ def goToOptions():
         g.img['options'] = pygame.transform.scale(img, (1920, 1080)).convert(g.screen)
 
     global labelAccept
-    labelAccept = g.fontSmall.render('Z: select   X: back', False, colorOff)
+    labelAccept = g.fontSmall.render('Z: select   X: back', False, (255, 255, 255))
     
     g.tickFunction = options
     g.keys['menuSelect'] = g.dt + 1
@@ -32,15 +32,24 @@ def options():
     if g.keys['menuBack']:
         g.tickFunction = returnTo
         g.tickFunction()
+        ow = g.pygame.mixer.Sound(os.path.join('sfx', 'Cancel8-Bit.ogg'))
+        ow.set_volume(g.volSound * 0.01 * 0.5)
+        ow.play()
         return
     
     if g.keys['up'] <= g.dt and g.keys['up'] > 0:
         optionsSelection -= 1
+        ow = g.pygame.mixer.Sound(os.path.join('sfx', 'Select8-Bit.ogg'))
+        ow.set_volume(g.volSound * 0.01 * 0.5)
+        ow.play()
         if optionsSelection < 0:
             optionsSelection = 3
             
     if g.keys['down'] <= g.dt and g.keys['down'] > 0:
         optionsSelection += 1
+        ow = g.pygame.mixer.Sound(os.path.join('sfx', 'Select8-Bit.ogg'))
+        ow.set_volume(g.volSound * 0.01 * 0.5)
+        ow.play()
         if optionsSelection >= 4:
             optionsSelection = 0
     
@@ -75,6 +84,9 @@ def options():
         if optionsSelection == 3:
             g.tickFunction = returnTo
             g.tickFunction()
+            ow = g.pygame.mixer.Sound(os.path.join('sfx', 'Confirm8-Bit.ogg'))
+            ow.set_volume(g.volSound * 0.01 * 0.5)
+            ow.play()
             return
     
     g.musicTitle.set_volume(g.volMusic / 100.0)
@@ -87,21 +99,21 @@ def options():
     volSoundString = 'Sound Volume: '
     volSoundString += str(g.volSound)
     labelVolSound = g.fontSmall.render(volSoundString, False, colorOn if optionsSelection == 0 else colorOff)
-    g.screen.blit(labelVolSound, (650, 350))
+    g.screen.blit(labelVolSound, (750, 450))
     
     volMusicString = 'Music Volume: '
     volMusicString += str(g.volMusic)
     labelVolMusic = g.fontSmall.render(volMusicString, False, colorOn if optionsSelection == 1 else colorOff)
-    g.screen.blit(labelVolMusic, (650, 400))
+    g.screen.blit(labelVolMusic, (750, 500))
     
     invulString = 'Invulnerability: '
     invulString += 'On' if g.invulnerability else 'Off'
     labelInvul = g.fontSmall.render(invulString, False, colorOn if optionsSelection == 2 else colorOff)
-    g.screen.blit(labelInvul, (650, 450))
+    g.screen.blit(labelInvul, (750, 550))
     
     backString = 'Back'
     labelBack = g.fontSmall.render(backString, False, colorOn if optionsSelection == 3 else colorOff)
-    g.screen.blit(labelBack, (650, 500))
+    g.screen.blit(labelBack, (750, 650))
     
     g.screen.blit(labelAccept, (1400, 1000))
     pass
