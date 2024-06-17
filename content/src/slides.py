@@ -24,6 +24,7 @@ def goToSlidesStage1():
     #g.pygame.mixer.music.play(-1)
     g.musicTitle.fadeout(500)
     g.musicGame.play(-1, 0, 0)
+    g.musicGame.set_volume(g.volMusic / 100.0)
     initSlides()
     pass
     

@@ -42,7 +42,10 @@ def raytrace(x1, y1, z1, x2, y2, z2):
         x = ((res[0] * z) + (x1 * (z2 - z1 - z))) / (z2 - z1)
         for layer in floors:
             if isinstance(layer, pytmx.TiledTileLayer):
-                gid = layer.data[z][int(x / stage.tilemap.tilewidth)]
+                tileX = int(x / stage.tilemap.tilewidth)
+                if tileX >= 80:
+                    return (x1, y1, z1)
+                gid = layer.data[z][tileX]
                 p = stage.tilemap.get_tile_properties_by_gid(gid)
                 if p and p['colliders']:
                     #solid tile, return intersection
@@ -117,7 +120,8 @@ def initOnce():
     global BulletSquidImg
     subsprite = g.pygame.Surface((12, 12), g.pygame.SRCALPHA)
     subsprite.blit(img, (-114, -101))
-    BulletSquidImg = (g.pygame.transform.scale(subsprite, (subsprite.get_width() * 6, subsprite.get_height() * 6)).convert_alpha(g.screen))
+    BulletSquidImg = (g.pygame.transform.scale(subsprite, (subsprite.get_width() * 6, subsprite.get_height() * 6)).convert(g.screen))
+    BulletSquidImg.set_colorkey((0, 0, 0))
     
     global BulletDinoriderImg
     subsprite = g.pygame.Surface((12, 12), g.pygame.SRCALPHA)
@@ -129,7 +133,8 @@ def initOnce():
     global BulletSaucerImg
     subsprite = g.pygame.Surface((12, 12), g.pygame.SRCALPHA)
     subsprite.blit(img, (-189, -74))
-    BulletSaucerImg = (g.pygame.transform.scale(subsprite, (subsprite.get_width() * 6, subsprite.get_height() * 6)).convert_alpha(g.screen))
+    BulletSaucerImg = g.pygame.transform.scale(subsprite, (subsprite.get_width() * 6, subsprite.get_height() * 6)).convert(g.screen)
+    BulletSaucerImg.set_colorkey((0, 0, 0))
     
 
 
@@ -203,10 +208,11 @@ def tickMove(self):
             distInRad = (self.radius + o.radius) - dist
             if distInRad > 0:
                 distXZ = math.sqrt(((self.x - o.x) * (self.x - o.x)) + ((self.z - o.z) * (self.z - o.z) * 2.0))
-                pushX = (self.x - o.x) / distXZ
-                pushZ = (self.z - o.z) / distXZ
-                self.accelX += pushX * 0.06
-                self.accelZ += pushZ * 0.06
+                if distXZ != 0:
+                    pushX = (self.x - o.x) / distXZ
+                    pushZ = (self.z - o.z) / distXZ
+                    self.accelX += pushX * 0.06
+                    self.accelZ += pushZ * 0.06
     
     avgVelX = self.velX + self.accelX * 0.5 * g.dt
     avgVelX = -self.maxVel if avgVelX < -self.maxVel else avgVelX if avgVelX < self.maxVel else self.maxVel
@@ -294,18 +300,24 @@ class Player:
         self.velZ = 0.0
         self.maxVel = 1.2
         self.touchingGround = True
-        self.jumpVel = -3.0
+        self.jumpVel = -2.66
         self.cooldown = 0.0
         self.xDir = 1
         self.collide = True
         self.curAnimTimer = 0
         self.curAnimDuration = 100.0 * 6.0
         self.isEnemy = False
-        self.hp = 3
+        self.hp = g.playerHealthMax
         targetScroll = (self.x - 960 + 400)
         g.scrollX = targetScroll
+        self.blinktimer = 0
+        self.playerDeadTimer = 0
 
     def tick(self):
+        self.blinktimer -= g.dt
+        if self.playerDeadTimer > 0:
+            self.playerDeadTimer += g.dt
+            return
         
         self.accelX = 0.0
         self.accelY = self.gravity
@@ -342,6 +354,11 @@ class Player:
         return
     
     def draw(self):
+        if self.playerDeadTimer > 0:
+            return
+        if self.blinktimer > 0 and (self.blinktimer / 50.0) % 2 > 1:
+            return
+    
         self.curAnimTimer += g.dt
         frameIdx = math.floor((self.curAnimTimer % self.curAnimDuration) * self.curAnimFrames / self.curAnimDuration)
         image = self.curAnim[frameIdx]
@@ -354,10 +371,20 @@ class Player:
         return
         
     def hit(self, hitPos):
+        if self.blinktimer > 0:
+            return
+        if g.stageClearTimer > 0:
+            return
+        if g.invulnerability:
+            return
+        self.blinktimer = 2000
         self.hp -= 1
         if self.hp <= 0:
             spawnHitStar(self, hitPos)
-            #explode(self)
+            self.playerDeadTimer += 1
+            explode(self)
+            #explode removes, so re-add to scene
+            g.stageObjects.append(self)
         else:
             spawnHitStar(self, hitPos)
         pushDist = math.sqrt((self.x - hitPos[0]) * (self.x - hitPos[0]) + (self.z - hitPos[2]) * (self.z - hitPos[2]))
@@ -377,7 +404,7 @@ class BulletPlayer:
         self.x = pos[0]
         self.y = pos[1]
         self.z = pos[2]
-        self.radius = 16
+        self.radius = 24
         self.moveAccel = 0.05
         self.gravity = 0.005
         self.velX = 0.6 if xDir == 1 else -0.6
@@ -461,7 +488,7 @@ saucerIdle = None
 
 class Saucer:
     def __init__(self, pos):
-        
+        global nextRotatingTimer
         global saucerIdle
         if saucerIdle == None:
             img = g.pygame.image.load(os.path.join('img', 'saucer', 'idle.png'))
@@ -471,6 +498,7 @@ class Saucer:
                 singleWidth = img.get_width() / self.curAnimFrames;
                 frame = g.pygame.Surface((singleWidth, img.get_height()), g.pygame.SRCALPHA)
                 frame.blit(img, (singleWidth * -i, 0))
+                frame = g.pygame.transform.flip(frame, True, False)
                 saucerIdle.append(\
                 g.pygame.transform.scale(frame, (frame.get_width() * 6, frame.get_height() * 6)).convert_alpha(g.screen))
         self.curAnimFrames = 5
@@ -482,7 +510,8 @@ class Saucer:
         self.curAnimDuration = 100.0 * 5.0
         self.curAnimTimer = 0.0
         self.collide = True
-        self.timer = 0
+        self.timer = nextRotatingTimer
+        nextRotatingTimer += 67.89
         self.isEnemy = True
         self.hp = 3
         self.gravity = 0.000
@@ -495,22 +524,32 @@ class Saucer:
         self.maxVel = 2.2
         self.moveAccel = 0.05
         self.attacking = False
-        self.nextAttack = random.uniform(100, 1000)
+        self.nextAttack = random.uniform(1000, 4000)
         
     
     def tick(self):
         self.timer += g.dt
         tickFrictionStop(self)
+        self.tickMoveAround()
+        
         if not self.attacking:
             self.nextAttack -=  g.dt
             if self.nextAttack <= 0:
                 self.attacking = True
-                self.nextAttack = random.uniform(100, 1000)
+                self.nextAttack = random.uniform(1000, 4000)
                 self.shoot()
                 self.attacking = False
         tickMove(self)
         self.y = math.sin(self.timer / 200.0) * 40 - 40 - 120
         return
+        
+    def tickMoveAround(self):
+        moveSpd = math.sin(self.timer * 0.001456) * 0.05 + 0.05
+        moveDirX = math.sin(self.timer * 0.002)
+        moveDirY = math.cos(self.timer * 0.002)
+        
+        self.accelX += moveDirX * moveSpd
+        self.accelZ += moveDirY * moveSpd
     
     def draw(self):
         self.curAnimTimer += g.dt
@@ -540,15 +579,18 @@ class Saucer:
     def shoot(self):
         if self.x > g.player.x + 1600:
             return;
-        newObj = BulletSaucer((self.x, self.y, self.z), self)
-        g.stageObjects.append(newObj)
+        if self.x < g.player.x - 900:
+            return;
+        for i in range(-8, 9):
+            newObj = BulletSaucer((self.x, self.y, self.z), self, i)
+            g.stageObjects.append(newObj)
 
 def spawnSaucer(obj):
     newObj = Saucer((obj.x, obj.y))
     g.stageObjects.append(newObj)
     
 class BulletSaucer:
-    def __init__(self, pos, shooter):
+    def __init__(self, pos, shooter, angleIdx):
         global nextRotatingTimer
         self.x = pos[0]
         self.y = pos[1]
@@ -556,6 +598,7 @@ class BulletSaucer:
         self.radius = 16
         self.moveAccel = 0.05
         self.gravity = 0.005
+        self.y = -60
         
         vel = 2.0
         playerDist = math.sqrt((g.player.x - self.x) * (g.player.x - self.x) + (g.player.z - self.z) * (g.player.z - self.z) )
@@ -566,9 +609,15 @@ class BulletSaucer:
             dirX = (g.player.x - self.x) / playerDist
             dirZ = (g.player.z - self.z) / playerDist
         
-        self.velX = dirX
+        angle = 0.05 * angleIdx
+        dirX1 = math.cos(angle) * dirX + math.sin(angle) * dirZ
+        dirZ1 = -math.sin(angle) * dirX + math.cos(angle) * dirZ
+        dirX = dirX1
+        dirZ = dirZ1
+        
+        self.velX = dirX * 0.4
         self.velY = 0
-        self.velZ = dirZ
+        self.velZ = dirZ * 0.4
         self.accelX = 0
         self.accelY = 0
         self.accelZ = 0
@@ -645,6 +694,7 @@ class Goblin:
                 singleWidth = img.get_width() / self.curAnimFrames;
                 frame = g.pygame.Surface((singleWidth, img.get_height()), g.pygame.SRCALPHA)
                 frame.blit(img, (singleWidth * -i, 0))
+                frame = g.pygame.transform.flip(frame, True, False)
                 goblinRun.append(\
                 g.pygame.transform.scale(frame, (frame.get_width() * 6, frame.get_height() * 6)).convert_alpha(g.screen))
         self.curAnimFrames = 5
@@ -665,7 +715,7 @@ class Goblin:
         self.accelX = 0
         self.accelY = self.gravity
         self.accelZ = 0
-        self.maxVel = 2.2
+        self.maxVel = 0.8
         self.attacking = False
         self.nextAttack = random.uniform(100, 1000)
         self.moveAccel = 0.05
@@ -685,6 +735,19 @@ class Goblin:
                 self.nextAttack = random.uniform(100, 1000)
                 self.shoot()
                 self.attacking = False
+        
+        if self.x < g.player.x + 1200:
+            dxz = (self.x - g.player.x) * (self.x - g.player.x) + (self.z - g.player.z) * (self.z - g.player.z)
+            if(dxz > 2000):
+                if self.x < g.player.x:
+                    self.accelX = 0.000525
+                else:
+                    self.accelX = -0.000525
+                if self.z < g.player.z:
+                    self.accelZ = 0.000525
+                else:
+                    self.accelZ = -0.000525
+        
         tickMove(self)
         return
     
@@ -716,7 +779,9 @@ class Goblin:
     def shoot(self):
         if self.x > g.player.x + 1600:
             return;
-        newObj = BulletGoblin((self.x, self.y, self.z), self)
+        if self.x < g.player.x - 900:
+            return;
+        newObj = BulletGoblin((self.x, self.y - 30, self.z), self)
         g.stageObjects.append(newObj)
 
 def spawnGoblin(obj):
@@ -732,7 +797,7 @@ class BulletGoblin:
         self.z = pos[2]
         self.radius = 16
         self.moveAccel = 0.05
-        self.gravity = 0.005
+        self.gravity = 0.0025
         
         vel = 2.0
         playerDist = math.sqrt((g.player.x - self.x) * (g.player.x - self.x) + (g.player.z - self.z) * (g.player.z - self.z) )
@@ -743,11 +808,11 @@ class BulletGoblin:
             dirX = (g.player.x - self.x) / playerDist
             dirZ = (g.player.z - self.z) / playerDist
         
-        self.velX = dirX
-        self.velY = 0
-        self.velZ = dirZ
+        self.velX = dirX * 0.55
+        self.velY = -0.8
+        self.velZ = dirZ * 0.55
         self.accelX = 0
-        self.accelY = 0
+        self.accelY = self.gravity
         self.accelZ = 0
         self.timer = nextRotatingTimer
         nextRotatingTimer += 456.789
@@ -814,6 +879,7 @@ class BulletGoblin:
 dinoriderRun = None
 class Dinorider:
     def __init__(self, pos):
+        global nextRotatingTimer
         global dinoriderRun
         if dinoriderRun == None:
             img = g.pygame.image.load(os.path.join('img', 'dinorider', 'run.png'))
@@ -835,7 +901,7 @@ class Dinorider:
         self.curAnimTimer = 0
         self.curAnimDuration = 100.0 * 4.0
         self.isEnemy = True
-        self.hp = 3
+        self.hp = 5
         self.gravity = 0.007
         self.velX = 0.0
         self.velY = 0.0
@@ -843,20 +909,39 @@ class Dinorider:
         self.accelX = 0
         self.accelY = self.gravity
         self.accelZ = 0
-        self.maxVel = 2.2
-        self.moveAccel = 0.05
+        self.maxVel = 1.0
+        self.moveAccel = 0.015
         self.attacking = False
-        self.nextAttack = random.uniform(100, 1000)
+        self.nextAttack = random.uniform(800, 1200)
+        self.timer = nextRotatingTimer
+        nextRotatingTimer += 456.789
+        self.baseX = self.x
+        self.baseZ = self.z
     
     def tick(self):
         tickFrictionStop(self)
+        
+        if self.velY < 0:
+            self.timer += g.dt
+            targetX = math.sin(self.timer * 0.00312) * 400 + math.sin(self.timer * 0.00412) * 420 + self.baseX
+            targetZ = math.sin(self.timer * 0.00187) * 460 + math.sin(self.timer * 0.00167) * 460 + self.baseZ
+            if targetX - 400 < self.x:
+                self.accelX = -self.moveAccel
+            if targetX + 400 > self.x:
+                self.accelX = self.moveAccel
+            if targetZ - 400 < self.z:
+                self.accelZ = -self.moveAccel
+            if targetZ + 400 > self.z:
+                self.accelZ = self.moveAccel
+        
         if not self.attacking:
             self.nextAttack -=  g.dt
             if self.nextAttack <= 0:
                 self.attacking = True
-                self.nextAttack = random.uniform(100, 1000)
+                self.nextAttack = random.uniform(800, 1200)
                 self.shoot()
                 self.attacking = False
+                self.velY = -1
         tickMove(self)
         return
     
@@ -903,7 +988,7 @@ class BulletDinorider:
         self.z = pos[2]
         self.radius = 16
         self.moveAccel = 0.05
-        self.gravity = 0.005
+        self.gravity = 0.01
         
         vel = 2.0
         playerDist = math.sqrt((g.player.x - self.x) * (g.player.x - self.x) + (g.player.z - self.z) * (g.player.z - self.z) )
@@ -914,11 +999,11 @@ class BulletDinorider:
             dirX = (g.player.x - self.x) / playerDist
             dirZ = (g.player.z - self.z) / playerDist
         
-        self.velX = dirX
-        self.velY = 0
-        self.velZ = dirZ
+        self.velX = dirX * 0.5
+        self.velY = -2
+        self.velZ = dirZ * 0.5
         self.accelX = 0
-        self.accelY = 0
+        self.accelY = self.gravity
         self.accelZ = 0
         self.timer = nextRotatingTimer
         nextRotatingTimer += 456.789
@@ -941,10 +1026,13 @@ class BulletDinorider:
         deltaY = avgVelY * g.dt
         
         if self.y + deltaY > - self.radius:
-            deltaY = -self.y - self.radius
-            self.velY = 0
-            self.breakBullet()
-            return
+            #deltaY = -self.y - self.radius
+            #self.velY = 0
+            #self.breakBullet()
+            #return
+            self.velY = self.velY * -0.8
+            self.y = -self.radius - 0.001
+            deltaY = 0
         
         o = g.player
         dist = math.sqrt(((self.x - o.x) * (self.x - o.x)) + ((self.y - o.y) * (self.y - o.y)) + ((self.z - o.z) * (self.z - o.z) * 2.0))
@@ -988,6 +1076,7 @@ plantmanRun = None
 class Plantman:
     def __init__(self, pos):
         global plantmanRun
+        global nextRotatingTimer
         if plantmanRun == None:
             img = g.pygame.image.load(os.path.join('img', 'plantman', 'run.png'))
             plantmanRun = []
@@ -996,6 +1085,7 @@ class Plantman:
                 singleWidth = img.get_width() / self.curAnimFrames;
                 frame = g.pygame.Surface((singleWidth, img.get_height()), g.pygame.SRCALPHA)
                 frame.blit(img, (singleWidth * -i, 0))
+                frame = g.pygame.transform.flip(frame, True, False)
                 plantmanRun.append(\
                 g.pygame.transform.scale(frame, (frame.get_width() * 6, frame.get_height() * 6)).convert_alpha(g.screen))
         self.curAnimFrames = 6
@@ -1008,7 +1098,7 @@ class Plantman:
         self.curAnimTimer = 0
         self.curAnimDuration = 100.0 * 6.0
         self.isEnemy = True
-        self.hp = 3
+        self.hp = 2
         self.gravity = 0.007
         self.velX = 0.0
         self.velY = 0.0
@@ -1016,18 +1106,35 @@ class Plantman:
         self.accelX = 0
         self.accelY = self.gravity
         self.accelZ = 0
-        self.maxVel = 2.2
-        self.moveAccel = 0.05
+        self.maxVel = 0.3
+        self.moveAccel = 0.005
         self.attacking = False
-        self.nextAttack = random.uniform(100, 1000)
+        self.nextAttack = random.uniform(4000, 5000)
+        self.timer = nextRotatingTimer
+        nextRotatingTimer += 456.789
+        self.baseX = self.x
+        self.baseZ = self.z
     
     def tick(self):
         tickFrictionStop(self)
+        
+        self.timer += g.dt
+        targetX = math.sin(self.timer * 0.00312) * 400 + math.sin(self.timer * 0.000412) * 220 + self.baseX
+        targetZ = math.sin(self.timer * 0.00287) * 500 + math.sin(self.timer * 0.000367) * 220 + self.baseZ
+        if targetX - 200 < self.x:
+            self.accelX = -self.moveAccel
+        if targetX + 200 > self.x:
+            self.accelX = self.moveAccel
+        if targetZ - 200 < self.z:
+            self.accelZ = -self.moveAccel
+        if targetZ + 200 > self.z:
+            self.accelZ = self.moveAccel
+        
         if not self.attacking:
             self.nextAttack -=  g.dt
             if self.nextAttack <= 0:
                 self.attacking = True
-                self.nextAttack = random.uniform(100, 1000)
+                self.nextAttack = random.uniform(4000, 5000)
                 self.shoot()
                 self.attacking = False
         tickMove(self)
@@ -1061,8 +1168,12 @@ class Plantman:
     def shoot(self):
         if self.x > g.player.x + 1600:
             return;
-        newObj = BulletPlantman((self.x, self.y, self.z), self)
-        g.stageObjects.append(newObj)
+        #newObj = BulletPlantman((self.x, self.y, self.z), self)
+        #g.stageObjects.append(newObj)
+        for i in range(60):
+            angle = i * 360 / 60
+            newObj = BulletPlantman((self.x, -40, self.z), self, angle)
+            g.stageObjects.append(newObj)
         
 
 def spawnPlantman(obj):
@@ -1070,7 +1181,7 @@ def spawnPlantman(obj):
     g.stageObjects.append(newObj)
 
 class BulletPlantman:
-    def __init__(self, pos, shooter):
+    def __init__(self, pos, shooter, angle):
         global nextRotatingTimer
         self.x = pos[0]
         self.y = pos[1]
@@ -1081,16 +1192,10 @@ class BulletPlantman:
         
         vel = 2.0
         playerDist = math.sqrt((g.player.x - self.x) * (g.player.x - self.x) + (g.player.z - self.z) * (g.player.z - self.z) )
-        if playerDist == 0:
-            dirX = 1
-            dirZ = 0
-        else:
-            dirX = (g.player.x - self.x) / playerDist
-            dirZ = (g.player.z - self.z) / playerDist
-        
-        self.velX = dirX
+        self.velX = math.sin(math.radians(angle)) * 0.3
         self.velY = 0
-        self.velZ = dirZ
+        self.velZ = math.cos(math.radians(angle)) * 0.3
+
         self.accelX = 0
         self.accelY = 0
         self.accelZ = 0
@@ -1167,6 +1272,7 @@ class EnemyBlue:
                 singleWidth = img.get_width() / self.curAnimFrames;
                 frame = g.pygame.Surface((singleWidth, img.get_height()), g.pygame.SRCALPHA)
                 frame.blit(img, (singleWidth * -i, 0))
+                frame = g.pygame.transform.flip(frame, True, False)
                 enemyblueRun.append(\
                 g.pygame.transform.scale(frame, (frame.get_width() * 6, frame.get_height() * 6)).convert_alpha(g.screen))
         self.curAnimFrames = 3
@@ -1179,7 +1285,7 @@ class EnemyBlue:
         self.curAnimTimer = 0
         self.curAnimDuration = 100.0 * 3.0
         self.isEnemy = True
-        self.hp = 3
+        self.hp = 1
         self.attacking = False
         self.nextAttack = random.uniform(100, 1000)
         self.gravity = 0.007
@@ -1189,13 +1295,20 @@ class EnemyBlue:
         self.accelX = 0
         self.accelY = self.gravity
         self.accelZ = 0
-        self.maxVel = 2.2
-        self.moveAccel = 0.05
+        self.maxVel = 1.0
+        self.moveAccel = 0.0016
         self.attacking = False
         self.nextAttack = random.uniform(100, 1000)
+        self.goingUp = True
     
     def tick(self):
+        startZ = self.z
         tickFrictionStop(self)
+        if self.goingUp:
+            self.accelZ = -self.moveAccel
+        else:
+            self.accelZ = self.moveAccel
+
         if not self.attacking:
             self.nextAttack -=  g.dt
             if self.nextAttack <= 0:
@@ -1204,6 +1317,15 @@ class EnemyBlue:
                 self.shoot()
                 self.attacking = False
         tickMove(self)
+        
+        if self.goingUp:
+            if startZ <= self.z:
+                self.goingUp = False
+                self.velZ = 0
+        else:
+            if startZ >= self.z:
+                self.goingUp = True
+                self.velZ = 0
         return
     
     def draw(self):
@@ -1233,7 +1355,9 @@ class EnemyBlue:
             
     def shoot(self):
         if self.x > g.player.x + 1600:
-            return;    
+            return;
+        if self.x < g.player.x - 900:
+            return;
         newObj = BulletEnemyBlue((self.x, self.y, self.z), self)
         g.stageObjects.append(newObj)
 
@@ -1260,9 +1384,9 @@ class BulletEnemyBlue:
             dirX = (g.player.x - self.x) / playerDist
             dirZ = (g.player.z - self.z) / playerDist
         
-        self.velX = dirX
+        self.velX = dirX * 0.6
         self.velY = 0
-        self.velZ = dirZ
+        self.velZ = dirZ * 0.6
         self.accelX = 0
         self.accelY = 0
         self.accelZ = 0
@@ -1362,7 +1486,7 @@ class HitStar:
     def draw(self):
         points = []
         for i in range(10):
-            ptRad = (i % 2) * 10 + 10
+            ptRad = (i % 2) * 20 + 20
             ptAngle = math.radians(i * 360.0 / 10)
             ptAngle += self.timer * 0.005
             points.append([math.cos(ptAngle) * ptRad - g.scrollX + self.x, math.sin(ptAngle) * ptRad - g.scrollY + self.y + self.z])
@@ -1382,12 +1506,12 @@ def spawnHitStar(self, hitPos):
 
 
 class HitSpark:
-    def __init__(self, x, y, z):
+    def __init__(self, x, y, z, radius):
         global nextRotatingTimer
         self.x = x
         self.y = y
         self.z = z
-        self.radius = 8
+        self.radius = radius
         self.moveAccel = 0.05
         self.gravity = 0.002
         self.velX = random.uniform(-.4, .4)
@@ -1432,7 +1556,7 @@ class HitSpark:
         
     def draw(self):
         center = (self.x - g.scrollX, self.y + self.z - g.scrollY)
-        g.pygame.draw.circle(g.screen, self.color, center, 4)
+        g.pygame.draw.circle(g.screen, self.color, center, self.radius)
         return
     
     def drawShadow(self):
@@ -1447,14 +1571,14 @@ def explode(self):
         randX = math.cos(randAngle) * randRadius
         randY = random.uniform(0, self.radius)
         randZ = math.sin(randAngle) * randRadius
-        newObj = HitSpark(self.x + randX, self.y + randY, self.z + randZ)
+        newObj = HitSpark(self.x + randX, self.y + randY, self.z + randZ, 8)
         g.stageCosmetic.append(newObj)
     g.stageObjects.remove(self)
     return
 
 def explodeSmall(self):
     for i in range(4):
-        newObj = HitSpark(self.x, self.y, self.z)
+        newObj = HitSpark(self.x, self.y, self.z, 4)
         g.stageCosmetic.append(newObj)
     g.stageObjects.remove(self)
     return
@@ -1466,6 +1590,7 @@ skaterRun = None
 class Skater:
     def __init__(self, pos):
         global skaterRun
+        global nextRotatingTimer
         if skaterRun == None:
             img = g.pygame.image.load(os.path.join('img', 'skater', 'run.png'))
             skaterRun = []
@@ -1496,23 +1621,42 @@ class Skater:
         self.accelX = 0
         self.accelY = self.gravity
         self.accelZ = 0
-        self.maxVel = 2.2
-        self.moveAccel = 0.05
+        self.maxVel = 1.6
+        self.moveAccel = 0.004
         self.attacking = False
-        self.nextAttack = random.uniform(100, 1000)
+        self.nextAttack = random.uniform(150, 1500)
+        self.baseX = self.x
+        self.baseY = self.y
+        self.baseZ = self.z
+        self.timer = nextRotatingTimer
+        nextRotatingTimer += 456.789
     
     def tick(self):
         tickFrictionStop(self)
+        
+        self.timer += g.dt
+        targetX = math.sin(self.timer * 0.00512) * 400 + math.sin(self.timer * 0.0412) * 40 + self.baseX
+        targetY = self.baseY
+        targetZ = math.sin(self.timer * 0.000387) * 500 + math.sin(self.timer * 0.0367) * 40 + self.baseZ
+        if targetX < self.x:
+            self.accelX = -self.moveAccel
+        if targetX > self.x:
+            self.accelX = self.moveAccel
+        if targetZ < self.z:
+            self.accelZ = -self.moveAccel
+        if targetZ > self.z:
+            self.accelZ = self.moveAccel
+        
         if not self.attacking:
             self.nextAttack -=  g.dt
             if self.nextAttack <= 0:
                 self.attacking = True
-                self.nextAttack = random.uniform(100, 1000)
+                self.nextAttack = random.uniform(150, 1500)
                 self.shoot()
                 self.attacking = False
         tickMove(self)
         
-                
+        
         if g.bossScrollX == -1 :
             g.bossScrollX = self.x - 1200    
         
@@ -1573,9 +1717,9 @@ class BulletSkater:
             dirX = (g.player.x - self.x) / playerDist
             dirZ = (g.player.z - self.z) / playerDist
         
-        self.velX = dirX
+        self.velX = dirX * 0.12
         self.velY = 0
-        self.velZ = dirZ
+        self.velZ = dirZ * 0.12
         self.accelX = 0
         self.accelY = 0
         self.accelZ = 0
@@ -1589,6 +1733,18 @@ class BulletSkater:
     def breakBullet(self):
         explodeSmall(self)
         return
+    
+    def newPosX(self):
+        radius = (10000.0 - self.duration) / 3500.0
+        if radius > 3:
+            radius = 3
+        return self.x + math.sin(self.timer * 0.0045) * 120 * radius
+    
+    def newPosZ(self):
+        radius = (10000.0 - self.duration) / 3500.0
+        if radius > 3:
+            radius = 3
+        return self.z + math.cos(self.timer * 0.0045) * 120 * radius
     
     def tick(self):
         avgVelX = self.velX + self.accelX * 0.5 * g.dt
@@ -1605,13 +1761,6 @@ class BulletSkater:
             self.breakBullet()
             return
         
-        o = g.player
-        dist = math.sqrt(((self.x - o.x) * (self.x - o.x)) + ((self.y - o.y) * (self.y - o.y)) + ((self.z - o.z) * (self.z - o.z) * 2.0))
-        distInRad = (self.radius + o.radius) - dist
-        if distInRad > 0:
-            o.hit((self.x, self.y, self.z))
-            self.breakBullet()
-        
         avgVelZ = self.velZ + self.accelZ * 0.5 * g.dt
         self.velZ += self.accelZ * g.dt
         deltaZ = avgVelZ * g.dt
@@ -1620,6 +1769,13 @@ class BulletSkater:
         self.y += deltaY
         self.z += deltaZ
         self.timer += g.dt
+        
+        o = g.player
+        dist = math.sqrt(((self.newPosX() - o.x) * (self.newPosX() - o.x)) + ((self.y - o.y) * (self.y - o.y)) + ((self.newPosZ() - o.z) * (self.newPosZ() - o.z) * 2.0))
+        distInRad = (self.radius + o.radius) - dist
+        if distInRad > 0:
+            o.hit((self.x, self.y, self.z))
+            self.breakBullet()
         
         self.duration -= g.dt
         if self.duration <= 0:
@@ -1630,12 +1786,14 @@ class BulletSkater:
     def draw(self):
         global BulletSkaterImg
         r = int((self.timer / 20.0) % 16)
-        g.sortedSprites.append((BulletSkaterImg[r], self.x, self.y, self.z))
+        g.sortedSprites.append((BulletSkaterImg[r], self.newPosX(), self.y, self.newPosZ()))
         return
     
     def drawShadow(self):
         global shadowDict
-        g.shadowSprites.append((shadowDict['32'], self.x, self.y + self.radius, self.z))
+        newX = self.x + math.sin(self.timer * 0.0045) * 140
+        newZ = self.z + math.cos(self.timer * 0.0045) * 140
+        g.shadowSprites.append((shadowDict['32'], self.newPosX(), self.y + self.radius, self.newPosZ()))
         return
 
 
@@ -1664,7 +1822,7 @@ class Squid:
         self.curAnimTimer = 0
         self.curAnimDuration = 100.0 * 8.0
         self.isEnemy = True
-        self.hp = 3
+        self.hp = 16
         self.attacking = False
         self.nextAttack = random.uniform(100, 1000)
         self.gravity = 0.007
@@ -1677,18 +1835,47 @@ class Squid:
         self.maxVel = 2.2
         self.moveAccel = 0.05
         self.attacking = False
-        self.nextAttack = random.uniform(100, 1000)
+        self.nextAttack = random.uniform(1600, 2800)
         g.bossScrollX = self.x - 1400
+        self.jumping = False
     
     def tick(self):
-        tickFrictionStop(self)
+        if not self.jumping:
+            tickFrictionStop(self)
         if not self.attacking:
             self.nextAttack -=  g.dt
             if self.nextAttack <= 0:
                 self.attacking = True
-                self.nextAttack = random.uniform(100, 1000)
-                self.shoot()
+                self.nextAttack = random.uniform(1600, 2800)
+                self.jumping = True
                 self.attacking = False
+                self.velY = -4.0
+                
+        if self.jumping: 
+            if self.velY < 0:
+                dxz = (self.x - g.player.x) * (self.x - g.player.x) + (self.z - g.player.z) * (self.z - g.player.z)
+                if(dxz > 2000):
+                    if self.x < g.player.x:
+                        self.accelX = 0.0125
+                    else:
+                        self.accelX = -0.0125
+                    if self.z < g.player.z:
+                        self.accelZ = 0.0125
+                    else:
+                        self.accelZ = -0.0125
+                else:
+                    self.accelX = 0
+                    self.accelZ = 0
+                    self.velX = 0
+                    self.velZ = 0
+            else:
+                self.accelX = 0
+                self.accelZ = 0
+                self.velX = 0
+                self.velZ = 0
+                if self.y + self.radius + 0.001 > 0:
+                    self.jumping = False
+                    self.shoot()
         tickMove(self)
         return
     
@@ -1722,15 +1909,21 @@ class Squid:
     def shoot(self):
         if self.x > g.player.x + 1600:
             return;
-        newObj = BulletSquid((self.x, self.y, self.z), self)
-        g.stageObjects.append(newObj)
+        for i in range(60):
+            angle = i * 360 / 60
+            newObj = BulletSquid((self.x, -40, self.z), self, angle, 1)
+            g.stageObjects.append(newObj)
+        for i in range(60):
+            angle = i * 360 / 60
+            newObj = BulletSquid((self.x, -30, self.z), self, angle,0.61)
+            g.stageObjects.append(newObj)
 
 def spawnSquid(obj):
     newObj = Squid((obj.x, obj.y))
     g.stageObjects.append(newObj)
 
 class BulletSquid:
-    def __init__(self, pos, shooter):
+    def __init__(self, pos, shooter, angle, speedMul):
         global nextRotatingTimer
         self.x = pos[0]
         self.y = pos[1]
@@ -1739,18 +1932,9 @@ class BulletSquid:
         self.moveAccel = 0.05
         self.gravity = 0.005
         
-        vel = 2.0
-        playerDist = math.sqrt((g.player.x - self.x) * (g.player.x - self.x) + (g.player.z - self.z) * (g.player.z - self.z) )
-        if playerDist == 0:
-            dirX = 1
-            dirZ = 0
-        else:
-            dirX = (g.player.x - self.x) / playerDist
-            dirZ = (g.player.z - self.z) / playerDist
-        
-        self.velX = dirX
+        self.velX = math.sin(math.radians(angle)) * speedMul
         self.velY = 0
-        self.velZ = dirZ
+        self.velZ = math.cos(math.radians(angle)) * speedMul
         self.accelX = 0
         self.accelY = 0
         self.accelZ = 0
@@ -1758,7 +1942,7 @@ class BulletSquid:
         nextRotatingTimer += 456.789
         self.collide = False
         self.isEnemy = False
-        self.duration = 10000.0
+        self.duration = 6000.0
         return
     
     def breakBullet(self):
@@ -1773,13 +1957,7 @@ class BulletSquid:
         avgVelY = self.velY + self.accelY * 0.5 * g.dt
         self.velY += self.accelY * g.dt
         deltaY = avgVelY * g.dt
-        
-        if self.y + deltaY > - self.radius:
-            deltaY = -self.y - self.radius
-            self.velY = 0
-            self.breakBullet()
-            return
-        
+
         o = g.player
         dist = math.sqrt(((self.x - o.x) * (self.x - o.x)) + ((self.y - o.y) * (self.y - o.y)) + ((self.z - o.z) * (self.z - o.z) * 2.0))
         distInRad = (self.radius + o.radius) - dist

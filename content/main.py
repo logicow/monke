@@ -8,11 +8,11 @@ import gameObjects
 
 def initDesktopWindow():
     g.screen = g.pygame.display.set_mode((1920, 1080))
-    g.pygame.display.set_caption('Cycling2')
+    g.pygame.display.set_caption('Popsicle Pursuit')
 
 def initWeb():
     g.screen = g.pygame.display.set_mode((1920, 1080))
-    g.pygame.display.set_caption('Cycling2')
+    g.pygame.display.set_caption('Popsicle Pursuit')
 
 def initMonke():
     g.img = {}
@@ -21,12 +21,13 @@ def initMonke():
     g.fontBase = g.pygame.font.Font('font/Quicksand_Book.otf', 90)
     g.keys = {}
     g.dt = 0
-    g.volSound = 100
-    g.volMusic = 100
+    g.volSound = 30
+    g.volMusic = 30
     g.invulnerability = 0
     g.musicTitle = None
     g.musicGame = None
     g.musicGame2 = None
+    g.playerHealthMax = 4
     g.pygame.mixer.init()
     gameObjects.initOnce()
     title.goToTitle()

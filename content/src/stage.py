@@ -88,6 +88,7 @@ def goToStage4():
     stageNameImage = g.fontBase.render('Stage 4: The War', False, colorOff).convert_alpha()
     g.musicGame.fadeout(1000)
     g.musicGame2.play()
+    g.musicGame2.set_volume(g.volMusic / 100.0)
     initStage()
     pass
     
@@ -208,6 +209,22 @@ def initStage():
     stageNameFadeTimer = 0
     global labelAttack
     labelAttack = g.fontSmall.render('Z: Jump   X: Shoot', False, colorOff)
+    
+    global healthBar
+    img = g.pygame.image.load(os.path.join('img', 'healthbar.png'))
+    healthBar = (g.pygame.transform.scale(img, (img.get_width() * 6, img.get_height() * 6)).convert(g.screen))
+    healthBar.set_colorkey((0, 0, 0))
+    
+    global healthOn
+    img = g.pygame.image.load(os.path.join('img', 'health.png'))
+    healthOn = (g.pygame.transform.scale(img, (img.get_width() * 6, img.get_height() * 6)).convert(g.screen))
+    healthOn.set_colorkey((0, 0, 0))
+    
+    global healthOff
+    img = g.pygame.image.load(os.path.join('img', 'healthEmpty.png'))
+    healthOff = (g.pygame.transform.scale(img, (img.get_width() * 6, img.get_height() * 6)).convert(g.screen))
+    healthOff.set_colorkey((0, 0, 0))
+    
     pass
 
 def tickStage():
@@ -224,6 +241,7 @@ def tickStage():
         stageFadingOut = True
     
     doTransition = False
+    doReset = False
     fadeSpeed = 3.0 / 1000.0
     if stageFadingIn:
         stageAlpha += g.dt * fadeSpeed
@@ -238,6 +256,9 @@ def tickStage():
             stageFadingOut = False
             stageFadingIn = True
             doTransition = True
+            if g.player.playerDeadTimer >= 2000:
+                doTransition = False
+                doReset = True
     
 # check keys
     if g.keys['escape'] > 0 and g.keys['escape'] <= g.dt:
@@ -260,6 +281,23 @@ def tickStage():
             return
         elif stage == 5:
             slides.goToSlidesEnding()
+            return
+            
+    if doReset:
+        if stage == 1:
+            goToStage1()
+            return
+        elif stage == 2:
+            goToStage2()
+            return
+        elif stage == 3:
+            goToStage3()
+            return
+        elif stage == 4:
+            goToStage4()
+            return
+        elif stage == 5:
+            goToStage5()
             return
     
     if escapeMenu:
@@ -296,6 +334,9 @@ def tickStage():
         g.stageClearTimer += g.dt
         if g.stageClearTimer >= 2000:
             g.stageClear = True
+            
+    if g.player.playerDeadTimer >= 2000:
+        stageFadingOut = True
 
 #draw
     
@@ -375,6 +416,12 @@ def tickStage():
         g.screen.blit(stageNameImage, (posX, 300))
     
     g.screen.blit(labelAttack, (1440, 1010))
+    
+    g.screen.blit(healthBar, (32, 32))
+    for i in range(g.playerHealthMax):
+         g.screen.blit(healthOff, (32 + 25 * 6 + i * 6 * 6, 32 + 8 * 6))
+    for i in range(g.player.hp):
+         g.screen.blit(healthOn, (32 + 25 * 6 + i * 6 * 6, 32 + 8 * 6))
     
     if stageAlpha != 1:
         darkenerAlpha = 255 * (1 - stageAlpha)

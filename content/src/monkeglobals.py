@@ -25,3 +25,4 @@ def init():
     global startStageClear
     global stageClearTimer
     global bossScrollX
+    global playerHealthMax

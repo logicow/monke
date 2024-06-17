@@ -69,6 +69,7 @@ def title():
     if(titleMusicTimer >= 200 and titleMusicTimerOld < 200):
         print("playing music")
         g.musicTitle.play(-1, 0, 0)
+        g.musicTitle.set_volume(g.volMusic / 100.0)
 
     # check keys
     if g.keys['anykey'] > 0 and g.keys['anykey'] <= g.dt:

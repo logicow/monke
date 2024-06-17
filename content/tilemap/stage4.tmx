@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="80" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="23">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="80" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="25">
  <tileset firstgid="1" source="stage3.tsx"/>
  <tileset firstgid="257" source="stage1.tsx"/>
  <layer id="1" name="front edge" width="80" height="24">
@@ -62,12 +62,6 @@
   <object id="11" name="player" x="207.333" y="240">
    <point/>
   </object>
-  <object id="12" name="plantman" x="658" y="470.667">
-   <point/>
-  </object>
-  <object id="13" name="plantman" x="988" y="471.333">
-   <point/>
-  </object>
   <object id="14" name="plantman" x="1074.67" y="292">
    <point/>
   </object>
@@ -89,7 +83,10 @@
   <object id="21" name="plantman" x="847.333" y="638">
    <point/>
   </object>
-  <object id="22" name="plantman" x="898.667" y="225.333">
+  <object id="23" name="saucer" x="657.333" y="249.333">
+   <point/>
+  </object>
+  <object id="24" name="saucer" x="1284" y="621.333">
    <point/>
   </object>
  </objectgroup>

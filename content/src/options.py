@@ -77,6 +77,10 @@ def options():
             g.tickFunction()
             return
     
+    g.musicTitle.set_volume(g.volMusic / 100.0)
+    g.musicGame.set_volume(g.volMusic / 100.0)
+    g.musicGame2.set_volume(g.volMusic / 100.0)
+    
     # draw
     g.screen.blit(g.img['options'], (0, 0))
     
