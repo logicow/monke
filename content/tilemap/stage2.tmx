@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="80" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="27">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="80" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="28">
  <tileset firstgid="1" source="stage1.tsx"/>
  <layer id="1" name="front edge" width="80" height="24">
   <data encoding="csv">
@@ -64,13 +64,7 @@
   <object id="19" name="skater" x="2204.67" y="359.333">
    <point/>
   </object>
-  <object id="21" name="goblin" x="1789.83" y="425.834">
-   <point/>
-  </object>
-  <object id="22" name="goblin" x="1853.33" y="470.834">
-   <point/>
-  </object>
-  <object id="23" name="goblin" x="1698" y="478">
+  <object id="23" name="goblin" x="1547" y="562">
    <point/>
   </object>
   <object id="24" name="dinorider" x="876" y="429.833">
@@ -79,7 +73,7 @@
   <object id="25" name="dinorider" x="1118" y="341">
    <point/>
   </object>
-  <object id="26" name="plantman" x="452" y="327">
+  <object id="27" name="dinorider" x="1754" y="471">
    <point/>
   </object>
  </objectgroup>

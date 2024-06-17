@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "stage41.tmx",
+    "activeFile": "stage2.tmx",
     "expandedProjectPaths": [
         "."
     ],
@@ -38,7 +38,7 @@
         "stage1.tsx": {
             "dynamicWrapping": false,
             "scaleInDock": 1,
-            "scaleInEditor": 4
+            "scaleInEditor": 2
         },
         "stage2.tmx": {
             "expandedObjectLayers": [
@@ -47,8 +47,8 @@
             "scale": 1,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 2023.5,
-                "y": 275.5
+                "x": 1359.5,
+                "y": 270.5
             }
         },
         "stage2.tmx#objectsSet": {
@@ -149,20 +149,20 @@
         "stage1.tmx",
         "stage1.tsx",
         "stage2.tmx",
-        "stage41.tmx",
         "stage5.tmx",
-        "stage2.tsx"
+        "stage2.tsx",
+        "stage4.tmx"
     ],
     "project": "stage1.tiled-project",
     "recentFiles": [
         "stage3.tmx",
         "stage1.tmx",
         "stage1.tsx",
-        "stage2.tmx",
+        "stage4.tmx",
         "stage2.tsx",
         "stage5.tmx",
-        "stage41.tmx",
-        "stage4.tmx"
+        "stage2.tmx",
+        "stage41.tmx"
     ],
     "tileset.embedInMap": true,
     "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",

@@ -44,7 +44,7 @@ def loadTilemap(filename):
     pass
 
 def goToStage1():
-    #goToStage2()
+    #goToStage5()
     #return
     global backgroundName
     global stage

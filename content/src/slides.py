@@ -15,7 +15,7 @@ slides = [\
     '1', '2', '3', '4', \
     '5', '6', '7',\
     '8', '9', '10', '11', '12', '13',\
-    '14', '15', '16', '17', '18', '19']
+    '14', '15', '16', '17', '18', '19', '20']
 
 def goToSlidesStage1():
     global slideCurrent
@@ -91,7 +91,8 @@ def tickSlides():
     slideCurrent == '7' or\
     slideCurrent == '9' or\
     slideCurrent == '13' or\
-    slideCurrent == '19':
+    slideCurrent == '19' or\
+    slideCurrent == '20':
         anyKeyToClose = True;
     
     #update fade
@@ -119,7 +120,7 @@ def tickSlides():
             elif slideCurrent == '13':
                 stage.goToStage5()
                 return
-            elif slideCurrent == '19':
+            elif slideCurrent == '20':
                 title.goToTitle()
                 return
             else:

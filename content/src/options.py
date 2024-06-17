@@ -99,21 +99,21 @@ def options():
     volSoundString = 'Sound Volume: '
     volSoundString += str(g.volSound)
     labelVolSound = g.fontSmall.render(volSoundString, False, colorOn if optionsSelection == 0 else colorOff)
-    g.screen.blit(labelVolSound, (750, 450))
+    g.screen.blit(labelVolSound, (950, 450))
     
     volMusicString = 'Music Volume: '
     volMusicString += str(g.volMusic)
     labelVolMusic = g.fontSmall.render(volMusicString, False, colorOn if optionsSelection == 1 else colorOff)
-    g.screen.blit(labelVolMusic, (750, 500))
+    g.screen.blit(labelVolMusic, (950, 500))
     
     invulString = 'Invulnerability: '
     invulString += 'On' if g.invulnerability else 'Off'
     labelInvul = g.fontSmall.render(invulString, False, colorOn if optionsSelection == 2 else colorOff)
-    g.screen.blit(labelInvul, (750, 550))
+    g.screen.blit(labelInvul, (950, 550))
     
     backString = 'Back'
     labelBack = g.fontSmall.render(backString, False, colorOn if optionsSelection == 3 else colorOff)
-    g.screen.blit(labelBack, (750, 650))
+    g.screen.blit(labelBack, (950, 650))
     
     g.screen.blit(labelAccept, (1400, 1000))
     pass
